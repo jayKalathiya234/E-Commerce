@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const specialOfferSchema = mongoose.Schema({
+    code: {
+        type: String,
+        required: true
+    },
     title: {
         type: String,
         require: true
@@ -9,17 +13,22 @@ const specialOfferSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    offerImage: {
+    coupenType: {
         type: String,
+        enum: ['Fixed', 'Percentage'],
         require: true
     },
     offerDiscount: {
         type: String,
         require: true
     },
-    active: {
-        type: Boolean,
-        default: true
+    startDate: {
+        type: String,
+        require: true
+    },
+    endDate: {
+        type: String,
+        require: true
     }
 }, {
     timestamps: true,

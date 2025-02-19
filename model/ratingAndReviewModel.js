@@ -33,4 +33,4 @@ const ratingAndReviewSchema = mongoose.Schema({
     versionKey: false
 })
 
-module.exports = mongoose.model('ratingandreview', ratingAndReviewSchema);
+module.exports = mongoose.model('ratingandreview', ratingAndReviewSchema);  

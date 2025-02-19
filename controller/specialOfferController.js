@@ -2,7 +2,7 @@ const specialOffer = require('../model/specialOfferModel')
 
 exports.createSpecialOffer = async (req, res) => {
     try {
-        let { title, description, offerImage, offerDiscount, active } = req.body
+        let { code, title, description, coupenType, offerDiscount, startDate, endDate } = req.body
 
         let existSpecialOffer = await specialOffer.findOne({ title })
 
@@ -10,16 +10,14 @@ exports.createSpecialOffer = async (req, res) => {
             return res.status(400).json({ status: 400, message: "Special Offer already exist..." })
         }
 
-        if (!req.file) {
-            return res.status(404).json({ status: 404, message: "offerImage is Required" })
-        }
-
         existSpecialOffer = await specialOffer.create({
+            code,
             title,
             description,
-            offerImage: req.file.path,
+            coupenType,
             offerDiscount,
-            active
+            startDate,
+            endDate
         });
 
         return res.status(201).json({ status: 201, message: "special Offer Create SuccessFully...", specialOffer: existSpecialOffer });
@@ -89,10 +87,6 @@ exports.updateSpecialOfferById = async (req, res) => {
 
         if (!updateSpecialOfferId) {
             return res.status(404).json({ status: 404, message: "Special Offer Not Found" })
-        }
-
-        if (req.file) {
-            req.body.offerImage = req.file.path
         }
 
         updateSpecialOfferId = await specialOffer.findByIdAndUpdate(id, { ...req.body }, { new: true })

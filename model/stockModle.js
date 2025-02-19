@@ -1,23 +1,24 @@
 const mongoose = require('mongoose')
 
-const productSchema = mongoose.Schema({
+const stockSchema = mongoose.Schema({
     mainCategoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'MainCategory',
+        ref: 'maincategories',
         require: true
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        ref: 'categories',
         require: true
     },
     subCategoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'SubCategory',
+        ref: 'subcategories',
         require: true
     },
-    productName: {
-        type: String,
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products',
         require: true
     },
     stockStatus: {
@@ -32,6 +33,6 @@ const productSchema = mongoose.Schema({
 }, {
     timestamps: true,
     versionKey: false
-});
+})
 
-module.exports = mongoose.model('product', productSchema);
+module.exports = mongoose.model('stock', stockSchema)

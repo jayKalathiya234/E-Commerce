@@ -1,14 +1,25 @@
 const productVariant = require('../model/productVariantModel')
-
+const mongoose = require('mongoose')
 exports.createProductVariant = async (req, res) => {
     try {
-        let { productId, title, description, currentPrice, originalPrice, discount, specifications, storage, size, colorName, images, stockStatus } = req.body
+        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy } = req.body
 
-        let checkExistProductVariant = await productVariant.findOne({ productId, title })
+        // let checkExistProductVariant = await productVariant.findOne({ productId })
 
         // if (checkExistProductVariant) {
         //     return res.status(409).json({ status: 409, message: "Product Variant Alredy Exist..." })
         // }
+
+        if (typeof productOfferId === 'string') {
+            productOfferId = JSON.parse(productOfferId);
+        }
+
+        if (Array.isArray(productOfferId)) {
+            productOfferId = productOfferId.map(id => new mongoose.Types.ObjectId(id));
+        }
+        else {
+            return res.status(400).json({ status: 400, message: "productOfferId must be an array of ObjectIds" });
+        }
 
         if (!req.files) {
             return res.status(404).json({ status: 404, message: "Image Is Required" });
@@ -18,17 +29,20 @@ exports.createProductVariant = async (req, res) => {
 
         checkExistProductVariant = await productVariant.create({
             productId,
-            title,
+            sizeNameId,
+            unitId,
+            shortDescription,
             description,
-            currentPrice,
+            productOfferId,
             originalPrice,
-            discount,
+            discountPrice,
             specifications: typeof specifications === 'string' ? JSON.parse(specifications) : specifications,
             storage,
             size,
             colorName,
             images: files.map(file => file.path),
-            stockStatus
+            shiping,
+            returnPolicy
         })
 
         return res.status(200).json({ status: 200, message: "Product Variant Create SuccessFully...", productVariant: checkExistProductVariant });

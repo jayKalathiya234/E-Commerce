@@ -1,4 +1,5 @@
 const ratingAndReview = require('../model/ratingAndReviewModel')
+const mongoose = require('mongoose')
 
 exports.createRatingAndReview = async (req, res) => {
     try {
@@ -15,6 +16,7 @@ exports.createRatingAndReview = async (req, res) => {
         if (files) {
             productImages = files.map(file => file.path);
         }
+
         checkExistRating = await ratingAndReview.create({
             userId: req.user._id,
             productId,
@@ -95,7 +97,37 @@ exports.getRatingAndReviewById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getRatingAndReviewId = await ratingAndReview.findById(id)
+        let getRatingAndReviewId = await ratingAndReview.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'productData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'userData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productvariants',
+                    localField: 'productVariantId',
+                    foreignField: '_id',
+                    as: 'productVariantData'
+                }
+            }
+        ])
 
         if (!getRatingAndReviewId) {
             return res.status(404).json({ status: 404, message: "Rating And Review Not Found" })

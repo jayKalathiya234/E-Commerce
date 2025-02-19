@@ -2,7 +2,7 @@ const product = require('../model/productModel');
 
 exports.createProduct = async (req, res) => {
     try {
-        const { mainCategoryId, categoryId, subCategoryId, productName, title, description, currentPrice, originalPrice, discount, specifications, sizeCharts } = req.body;
+        const { mainCategoryId, categoryId, subCategoryId, productName } = req.body;
 
         let checkExistProduct = await product.findOne({ mainCategoryId, categoryId, subCategoryId, productName })
 
@@ -10,44 +10,44 @@ exports.createProduct = async (req, res) => {
             return res.status(409).json({ status: 409, message: "Product Alredy Exist" })
         }
 
-        const colorDetails = req.body.colorDetails
-            ? (typeof req.body.colorDetails === 'string'
-                ? JSON.parse(req.body.colorDetails)
-                : req.body.colorDetails)
-            : [];
+        // const colorDetails = req.body.colorDetails
+        //     ? (typeof req.body.colorDetails === 'string'
+        //         ? JSON.parse(req.body.colorDetails)
+        //         : req.body.colorDetails)
+        //     : [];
 
-        const totalExpectedImages = colorDetails.reduce((sum, color) => sum + (parseInt(color.imageCount) || 0), 0);
+        // const totalExpectedImages = colorDetails.reduce((sum, color) => sum + (parseInt(color.imageCount) || 0), 0);
 
-        if (totalExpectedImages !== req.files.length) {
-            return res.status(400).json({
-                status: 400,
-                message: `Image count mismatch. Expected ${totalExpectedImages} images but received ${req.files.length}`
-            });
-        }
+        // if (totalExpectedImages !== req.files.length) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: `Image count mismatch. Expected ${totalExpectedImages} images but received ${req.files.length}`
+        //     });
+        // }
 
-        let currentImageIndex = 0;
-        const processedColorDetails = [];
+        // let currentImageIndex = 0;
+        // const processedColorDetails = [];
 
-        for (const color of colorDetails) {
-            const imageCount = parseInt(color.imageCount) || 0;
+        // for (const color of colorDetails) {
+        //     const imageCount = parseInt(color.imageCount) || 0;
 
-            const colorImages = [];
-            for (let i = 0; i < imageCount; i++) {
-                if (currentImageIndex < req.files.length) {
-                    colorImages.push(`/images/${req.files[currentImageIndex].filename}`);
-                    currentImageIndex++;
-                }
-            }
+        //     const colorImages = [];
+        //     for (let i = 0; i < imageCount; i++) {
+        //         if (currentImageIndex < req.files.length) {
+        //             colorImages.push(`/images/${req.files[currentImageIndex].filename}`);
+        //             currentImageIndex++;
+        //         }
+        //     }
 
-            processedColorDetails.push({
-                colorName: color.colorName,
-                images: colorImages,
-            });
-        }
+        //     processedColorDetails.push({
+        //         colorName: color.colorName,
+        //         images: colorImages,
+        //     });
+        // }
 
-        if (currentImageIndex !== req.files.length) {
-            return res.status(400).json({ status: 400, message: "Not all images were properly processed" });
-        }
+        // if (currentImageIndex !== req.files.length) {
+        //     return res.status(400).json({ status: 400, message: "Not all images were properly processed" });
+        // }
 
 
         const newProduct = await product.create({
@@ -55,14 +55,14 @@ exports.createProduct = async (req, res) => {
             categoryId,
             subCategoryId,
             productName,
-            title,
-            description,
-            currentPrice,
-            originalPrice,
-            discount,
-            specifications: typeof specifications === 'string' ? JSON.parse(specifications) : specifications,
-            sizeCharts: typeof sizeCharts === 'string' ? JSON.parse(sizeCharts) : sizeCharts,
-            colorDetails: processedColorDetails
+            // title,
+            // description,
+            // currentPrice,
+            // originalPrice,
+            // discount,
+            // specifications: typeof specifications === 'string' ? JSON.parse(specifications) : specifications,
+            // sizeCharts: typeof sizeCharts === 'string' ? JSON.parse(sizeCharts) : sizeCharts,
+            // colorDetails: processedColorDetails
         });
 
         return res.status(200).json({ status: 200, message: "Product Created Successfully", product: newProduct });
@@ -115,6 +115,30 @@ exports.getAllProducts = async (req, res) => {
                     localField: "_id",
                     foreignField: "productId",
                     as: "productVariantData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "sizes",
+                    localField: "productVariantData.sizeNameId",
+                    foreignField: "_id",
+                    as: "sizeData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "units",
+                    localField: "productVariantData.unitId",
+                    foreignField: "_id",
+                    as: "unitData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "productoffers",
+                    localField: "productVariantData.productOfferId",
+                    foreignField: "_id",
+                    as: "productOfferData"
                 }
             }
         ])

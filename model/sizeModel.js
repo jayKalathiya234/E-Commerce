@@ -1,37 +1,35 @@
 const mongoose = require('mongoose')
 
-const productSchema = mongoose.Schema({
-    mainCategoryId: {
+const sizeSchema = mongoose.Schema({
+    mainCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'MainCategory',
-        require: true
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        require: true
     },
     subCategoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SubCategory',
-        require: true
     },
-    productName: {
+    sizeName: {
         type: String,
         require: true
     },
-    stockStatus: {
+    size: {
         type: String,
-        enum: ['In Stock', 'Out Of Stock', 'Low Stock'],
-        default: 'In Stock'
-    },
-    quantity: {
-        type: Number,
         require: true
+    },
+    unit: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Unit',
+        require: true,
+        default: '-'
     }
 }, {
     timestamps: true,
     versionKey: false
 });
 
-module.exports = mongoose.model('product', productSchema);
+module.exports = mongoose.model('sizes', sizeSchema)

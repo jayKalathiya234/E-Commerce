@@ -2,16 +2,16 @@ const subCategory = require('../model/subCategoryModel');
 
 exports.createSubCategory = async (req, res) => {
     try {
-        let { maniCategoryId, categoryId, subCategoryName } = req.body
+        let { mainCategoryId, categoryId, subCategoryName } = req.body
 
-        let existSubCategory = await subCategory.findOne({ maniCategoryId, categoryId, subCategoryName })
+        let existSubCategory = await subCategory.findOne({ mainCategoryId, categoryId, subCategoryName })
 
         if (existSubCategory) {
             return res.status(409).json({ status: 409, message: "Sub Category Alredy Exist" })
         }
 
         existSubCategory = await subCategory.create({
-            maniCategoryId,
+            mainCategoryId,
             categoryId,
             subCategoryName
         });

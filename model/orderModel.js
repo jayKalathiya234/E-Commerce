@@ -39,6 +39,11 @@ const orderSchema = mongoose.Schema({
         ref: 'specialoffers',
         require: true
     },
+    productOfferId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'productoffer',
+        require: true
+    },
     totalAmount: {
         type: Number,
         require: true

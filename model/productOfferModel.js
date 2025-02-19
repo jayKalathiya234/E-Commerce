@@ -1,30 +1,31 @@
 const mongoose = require('mongoose')
 
-const productVariantSchema = mongoose.Schema({
+const productOfferSchema = mongoose.Schema({
+    mainCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mainCategory',
+        required: true
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'categories',
+        require: true
+    },
+    subCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'subCategories',
+        require: true
+    },
     productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'product',
+        ref: 'products',
         require: true
     },
-    sizeNameId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'size',
-        require: true
-    },
-    size: {
+    offerName: {
         type: String,
         require: true
     },
-    unitId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'unit',
-        require: true
-    },
-    shortDescription: {
-        type: String,
-        require: true
-    },
-    originalPrice: {
+    code: {
         type: String,
         require: true
     },
@@ -32,42 +33,34 @@ const productVariantSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    productOfferId: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'productOffer',
-        require: true
-    }],
-    colorName: {
+    price: {
         type: String,
         require: true
     },
-    images: [{
+    startDate: {
         type: String,
         require: true
-    }],
-    specifications: {
-        type: mongoose.Schema.Types.Mixed
+    },
+    endDate: {
+        type: String,
+        require: true
+    },
+    minimumPurchase: {
+        type: String,
+        require: true
+    },
+    maximumPurchase: {
+        type: String,
+        require: true
     },
     description: {
         type: String,
         require: true
-    },
-    shiping: {
-        type: String,
-        require: true
-    },
-    returnPolicy: {
-        type: String,
-        require: true
-    },
-    stockStatus: {
-        type: String,
-        enum: ["true", 'false'],
-        default: true
     }
 }, {
     timestamps: true,
     versionKey: false
 });
 
-module.exports = mongoose.model('productvariant', productVariantSchema)
+module.exports = mongoose.model('productOffer', productOfferSchema)
+

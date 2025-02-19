@@ -4,12 +4,12 @@ let otp = 1234
 
 exports.createNewUserAdmin = async (req, res) => {
     try {
-        let { name, mobileNo, password, role } = req.body
+        let { name, email, mobileNo, password, role } = req.body
 
-        let checkExistMobileNo = await user.findOne({ mobileNo })
+        let checkExistMobileNo = await user.findOne({ email })
 
         if (checkExistMobileNo) {
-            return res.status(409).json({ status: 409, message: "Mobile No Alredy Exist" })
+            return res.status(409).json({ status: 409, message: "Mobile No Is Already Exist" })
         }
 
         let salt = await bcrypt.genSalt(10)
@@ -17,13 +17,13 @@ exports.createNewUserAdmin = async (req, res) => {
 
         checkExistMobileNo = await user.create({
             name,
+            email,
             mobileNo,
             password: hasPassword,
             role: 'admin',
-            otp
         });
 
-        return res.status(201).json({ status: 201, message: "Otp Send SuccessFully....", user: checkExistMobileNo })
+        return res.status(201).json({ status: 201, message: "Admin Create SuccessFully...", user: checkExistMobileNo })
 
     } catch (error) {
         console.log(error);

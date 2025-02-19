@@ -3,10 +3,13 @@ const Address = require('../model/addressModel')
 const Coupon = require('../model/specialOfferModel');
 const Product = require('../model/productModel')
 const ProductVariant = require('../model/productVariantModel');
+const productOffer = require('../model/productOfferModel')
+const stock = require('../model/stockModle');
+const mongoose = require('mongoose');
 
 exports.createOrder = async (req, res) => {
     try {
-        let { userId, addressId, items, coupenId } = req.body;
+        let { userId, addressId, items, coupenId, productOfferId } = req.body;
 
         let checkAddress = await Address.findById(addressId);
 
@@ -18,12 +21,12 @@ exports.createOrder = async (req, res) => {
         for (let item of items) {
             const product = await Product.findById(item.productId);
             if (!product) {
-                return res.status(404).json({ message: `Product not found` });
+                return res.status(404).json({ message: 'Product not found' });
             }
 
             const variant = await ProductVariant.findById(item.productVariantId);
             if (!variant) {
-                return res.status(404).json({ message: `Product variant not found` });
+                return res.status(404).json({ message: 'Product variant not found' });
             }
 
             products.push({ product, variant, quantity: item.quantity });
@@ -32,19 +35,39 @@ exports.createOrder = async (req, res) => {
         let coupon;
         if (coupenId) {
             coupon = await Coupon.findById(coupenId);
+            console.log(coupon);
             if (!coupon) {
                 return res.status(404).json({ message: 'Coupon not found' });
             }
         }
 
+        if (productOfferId) {
+            coupon = await productOffer.findById(productOfferId);
+            if (!coupon) {
+                return res.status(404).json({ message: 'Product Offer not found' });
+            }
+        }
+
         let totalAmount = 0;
         for (const { variant, quantity } of products) {
-            totalAmount += variant.currentPrice * quantity
+            totalAmount += variant.discountPrice * quantity
         }
+
         if (coupon) {
-            totalAmount -= coupon.offerDiscount;
+            if (coupon.coupenType === 'Fixed') {
+                totalAmount -= coupon.offerDiscount;
+                console.log(totalAmount);
+            } else if (coupon.coupenType === 'Percentage') {
+                totalAmount -= (totalAmount * parseFloat(coupon.offerDiscount) / 100);
+            }
         }
+
+        if (productOfferId) {
+            totalAmount -= coupon.price
+        }
+
         let deliveryType, deliveryCost
+
         if (deliveryType === 'Express') {
             deliveryCost = 35;
         } else if (deliveryType === 'Standard') {
@@ -67,6 +90,19 @@ exports.createOrder = async (req, res) => {
             deliveryType,
             paymentMethod: 'received'
         });
+
+        for (let item of products) {
+            let { product, variant, quantity } = item;
+
+            product = await Product.findById(item.product);
+            product.quantity -= item.quantity;
+            await product.save();
+
+            let stockData = await stock.findOne({ productId: item.product })
+            stockData.quantity -= quantity;
+            await stockData.save();
+        }
+
 
         return res.status(201).json({ status: 201, message: "Order Created SuccessFully....", order: orderCreate });
 
@@ -127,6 +163,14 @@ exports.getAllOrders = async (req, res) => {
                     foreignField: '_id',
                     as: 'coupenData'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'productoffers',
+                    localField: 'productOfferId',
+                    foreignField: '_id',
+                    as: 'productOfferData'
+                }
             }
         ])
 
@@ -154,7 +198,61 @@ exports.getOrderById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getOrderId = await order.findById(id)
+        let getOrderId = await order.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'userData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'addresses',
+                    localField: 'addressId',
+                    foreignField: '_id',
+                    as: 'addressData'
+                },
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.productId',
+                    foreignField: '_id',
+                    as: 'productData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productvariants',
+                    localField: 'items.productVariantId',
+                    foreignField: '_id',
+                    as: 'productVariantData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'specialoffers',
+                    localField: 'coupenId',
+                    foreignField: '_id',
+                    as: 'coupenData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productoffers',
+                    localField: 'productOfferId',
+                    foreignField: '_id',
+                    as: 'productOfferData'
+                }
+            }
+        ])
 
         if (!getOrderId) {
             return res.status(404).json({ status: 404, message: "Order Not Found" })
@@ -172,7 +270,7 @@ exports.updateOrderById = async (req, res) => {
     try {
         let id = req.params.id;
 
-        let { addressId, items, coupenId, deliveryType } = req.body;
+        let { addressId, items, coupenId, productOfferId, deliveryType } = req.body;
 
         const chekOrder = await order.findById(id);
 
@@ -214,15 +312,31 @@ exports.updateOrderById = async (req, res) => {
             }
         }
 
+        if (productOfferId) {
+            coupon = await productOffer.findById(productOfferId);
+            if (!coupon) {
+                return res.status(404).json({ message: 'Product Offer not found' });
+            }
+        }
+
         let totalAmount = 0;
         for (const { productId, productVariantId, quantity } of products) {
             const product = await Product.findById(productId);
             const variant = await ProductVariant.findById(productVariantId);
-            totalAmount += variant.currentPrice * quantity;
+            totalAmount += variant.discountPrice * quantity;
         }
 
         if (coupon) {
-            totalAmount -= coupon.offerDiscount;
+            if (coupon.coupenType === 'Fixed') {
+                totalAmount -= coupon.offerDiscount;
+                console.log(totalAmount);
+            } else if (coupon.coupenType === 'Percentage') {
+                totalAmount -= (totalAmount * parseFloat(coupon.offerDiscount) / 100);
+            }
+        }
+
+        if (productOfferId) {
+            totalAmount -= coupon.price
         }
 
         let deliveryCost;
@@ -245,6 +359,7 @@ exports.updateOrderById = async (req, res) => {
         chekOrder.totalAmount = totalAmount;
         chekOrder.deliveryType = deliveryType;
         chekOrder.coupenId = coupon?._id;
+        chekOrder.productOfferId = coupon?.productOfferId;
 
         const updatedOrder = await chekOrder.save();
 
@@ -372,6 +487,14 @@ exports.getAllMyOrders = async (req, res) => {
                     localField: 'coupenId',
                     foreignField: '_id',
                     as: 'coupenData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productoffers',
+                    localField: 'productOfferId',
+                    foreignField: '_id',
+                    as: 'productOfferData'
                 }
             }
         ])

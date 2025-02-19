@@ -28,6 +28,32 @@ exports.userLogin = async (req, res) => {
     }
 }
 
+exports.adminLogin = async (req, res) => {
+    try {
+        let { mobileNo, password } = req.body
+
+        let checkEmail = await user.findOne({ mobileNo, role: 'admin' })
+
+        if (!checkEmail) {
+            return res.status(404).json({ status: 404, message: "Mobile Not Found" })
+        }
+
+        let comparePassword = await bcrypt.compare(password, checkEmail.password)
+
+        if (!comparePassword) {
+            return res.status(404).json({ status: 404, message: "Password Not Found" })
+        }
+
+        let token = jwt.sign({ _id: checkEmail._id }, process.env.SECRET_KEY, { expiresIn: '1D' });
+
+        return res.status(200).json({ status: 200, message: "Admin Login SuccessFully...", adminUser: checkEmail, token: token })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
 exports.verifyOtp = async (req, res) => {
     try {
         let { mobileNo, otp } = req.body
@@ -82,7 +108,7 @@ exports.forgotPassword = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
     try {
-        let id = req.user._id
+        let id = req.params.id
 
         let userId = await user.findById(id);
 
@@ -102,6 +128,75 @@ exports.changePassword = async (req, res) => {
         let updatePassword = await user.findByIdAndUpdate(id, { password: hashPassword }, { new: true })
 
         return res.json({ status: 200, message: "Password Changed SuccessFully..." })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.updatePassword = async (req, res) => {
+    try {
+        let id = req.user._id
+
+        let getUser = await user.findById(id)
+
+        if (!getUser) {
+            return res.status(404).json({ status: 404, message: "User Not Found" })
+        }
+
+        let { currentPassword, newPassword, confirmPassword } = req.body
+
+        let checkCurrentPassword = await bcrypt.compare(currentPassword, getUser.password)
+
+        if (!checkCurrentPassword) {
+            return res.status(404).json({ status: 404, message: "Invalid Current Password" })
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.json({ status: 400, message: "New Password And Confirm Password Not Match" })
+        }
+
+        let salt = await bcrypt.genSalt(10);
+
+        let hashPassword = await bcrypt.hash(newPassword, salt);
+
+        let updatePassword = await user.findByIdAndUpdate(id, { password: hashPassword }, { new: true });
+
+        return res.status(200).json({ status: 200, message: "Password Update SuccessFully..." });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.getAllDeactiveUser = async (req, res) => {
+    try {
+        let page = parseInt(req.query.page)
+        let pageSize = parseInt(req.query.pageSize)
+
+        if (page < 1 || pageSize < 1) {
+            return res.status(401).json({ status: 401, message: "Page And PageSize Cann't Be Less Than 1" })
+        }
+
+        let paginatedDeactiveUser;
+
+        paginatedDeactiveUser = await user.find({ active: true })
+
+        let count = paginatedDeactiveUser.length
+
+        if (count === 0) {
+            return res.status(404).json({ status: 404, message: "user not Found" })
+        }
+
+        if (page && pageSize) {
+            let startIndex = (page - 1) * pageSize
+            let lastIndex = (startIndex + pageSize)
+            paginatedDeactiveUser = await paginatedDeactiveUser.slice(startIndex, lastIndex)
+        }
+
+        return res.status(200).json({ status: 200, totalDeactiveUser: count, message: "All Deactive User Found SuccessFully...", deactiveUser: paginatedDeactiveUser })
 
     } catch (error) {
         console.log(error)
