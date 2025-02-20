@@ -1,5 +1,5 @@
 const express = require('express');
-const { createNewUser, getAllUsers, createNewUserAdmin, getUserById, updateUserById, activeUserAccount, deactiveAccoutOtpVerify, activeAccoutOtpVerify, resendOtpDeactiveAccount, resendOtpActiveAccount, deactiveUserAccount } = require('../controller/userController');
+const { createNewUser, getAllUsers, createNewUserAdmin, getUserById, updateUserById, activeUserAccount, deactiveAccoutOtpVerify, activeAccoutOtpVerify, resendOtpDeactiveAccount, resendOtpActiveAccount, deactiveUserAccount, deleteUserById } = require('../controller/userController');
 const { verifyOtp, userLogin, forgotPassword, changePassword, adminLogin, updatePassword, getAllDeactiveUser } = require('../auth/userLogin');
 const { createMainCategory, getAllMainCategory, getMainCategoryById, updateMainCategoryById, deleteMainCategoryById } = require('../controller/mainCategoryController');
 const upload = require('../helper/imageUplode');
@@ -53,6 +53,7 @@ indexRoutes.get('/activeAccountOtpVerify', auth(['user']), activeAccoutOtpVerify
 indexRoutes.get('/resendOtpDeactiveAccount', auth(['user']), resendOtpDeactiveAccount);
 indexRoutes.get('/resendOtpActiveAccount', auth(['user']), resendOtpActiveAccount);
 indexRoutes.get('/allDeactiveUserAccount', auth(['admin']), getAllDeactiveUser)
+indexRoutes.delete('/deleteUser/:id', auth(['admin']), deleteUserById)
 
 // Main Category Routes
 
