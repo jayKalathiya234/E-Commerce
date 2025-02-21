@@ -35,7 +35,6 @@ exports.createOrder = async (req, res) => {
         let coupon;
         if (coupenId) {
             coupon = await Coupon.findById(coupenId);
-            console.log(coupon);
             if (!coupon) {
                 return res.status(404).json({ message: 'Coupon not found' });
             }
@@ -56,7 +55,7 @@ exports.createOrder = async (req, res) => {
         if (coupon) {
             if (coupon.coupenType === 'Fixed') {
                 totalAmount -= coupon.offerDiscount;
-                console.log(totalAmount);
+
             } else if (coupon.coupenType === 'Percentage') {
                 totalAmount -= (totalAmount * parseFloat(coupon.offerDiscount) / 100);
             }
@@ -329,7 +328,6 @@ exports.updateOrderById = async (req, res) => {
         if (coupon) {
             if (coupon.coupenType === 'Fixed') {
                 totalAmount -= coupon.offerDiscount;
-                console.log(totalAmount);
             } else if (coupon.coupenType === 'Percentage') {
                 totalAmount -= (totalAmount * parseFloat(coupon.offerDiscount) / 100);
             }

@@ -1,10 +1,11 @@
 const returnOrder = require('../model/returnOrderModel');
 const order = require('../model/orderModel');
+const mongoose = require('mongoose');
 let otp = 123456
 
 exports.createReturnOrder = async (req, res) => {
     try {
-        let { orderId, userId, mobileNo } = req.body
+        let { orderId, reasonForReturn, mobileNo } = req.body
 
         let checkOrder = await order.findById(orderId)
 
@@ -12,7 +13,7 @@ exports.createReturnOrder = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Order Not Found" })
         }
 
-        let existReturnOrder = await returnOrder.findOne({ orderId, userId })
+        let existReturnOrder = await returnOrder.findOne({ orderId, userId: req.user._id })
 
         if (existReturnOrder) {
             return res.status(409).json({ status: 409, message: "Order Alredy Return" })
@@ -25,6 +26,7 @@ exports.createReturnOrder = async (req, res) => {
         existReturnOrder = await returnOrder.create({
             orderId,
             userId: req.user._id,
+            reasonForReturn,
             mobileNo,
             otp: otp
         });
@@ -39,7 +41,7 @@ exports.createReturnOrder = async (req, res) => {
 
 exports.returnOrderVerifyOtp = async (req, res) => {
     try {
-        let { orderId, otp, reasonForReturn, mobileNo } = req.body;
+        let { orderId, otp, mobileNo } = req.body;
 
         let checkOrder = await order.findById(orderId)
 
@@ -60,7 +62,7 @@ exports.returnOrderVerifyOtp = async (req, res) => {
 
         checkOrder.isReturn = true
 
-        returnOrderData.reasonForReturn = reasonForReturn;
+        // returnOrderData.reasonForReturn = reasonForReturn;
         returnOrderData.otp = undefined;
         returnOrderData.mobileNo = mobileNo;
 
@@ -119,6 +121,14 @@ exports.getAllReturnOrder = async (req, res) => {
                     as: 'productVariantData'
                 }
             },
+            {
+                $lookup: {
+                    from: 'reasonofcancellations',
+                    localField: 'reasonForReturn',
+                    foreignField: '_id',
+                    as: 'cancellationData'
+                }
+            }
         ])
 
         let count = paginatedReturnOrder.length
@@ -145,7 +155,53 @@ exports.getReturnOrderDataById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getReturnOrderId = await returnOrder.findById(id)
+        let getReturnOrderId = await returnOrder.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'userData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'orders',
+                    localField: 'orderId',
+                    foreignField: '_id',
+                    as: 'orderData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderData.items.productId',
+                    foreignField: '_id',
+                    as: 'productData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productvariants',
+                    localField: 'orderData.items.productVariantId',
+                    foreignField: '_id',
+                    as: 'productVariantData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'reasonofcancellations',
+                    localField: 'reasonForReturn',
+                    foreignField: '_id',
+                    as: 'cancellationData'
+                }
+            }
+        ])
 
         if (!getReturnOrderId) {
             return res.status(404).json({ status: 404, message: "Return Order Not Found" })

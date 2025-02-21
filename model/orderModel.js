@@ -50,7 +50,7 @@ const orderSchema = mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Confirmed', 'Shipped', 'outForDelivery', 'Delivered'],
+        enum: ['Confirmed', 'Shipped', 'outForDelivery', 'Delivered','Cancelled'],
         default: 'Confirmed',
         require: true
     },

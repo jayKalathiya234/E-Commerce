@@ -12,7 +12,8 @@ const returnOrderSchema = mongoose.Schema({
         require: true
     },
     reasonForReturn: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'reasonofcancellation',
         require: true
     },
     mobileNo: {

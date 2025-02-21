@@ -28,6 +28,9 @@ const { createCard, getAllCardTitles, getCardTitleById, updateCardTitleById, del
 const { createPopularBrands, getAllPopularBrands, getBrandById, updateBrandById, deletePopularBrandById } = require('../controller/popularBrandsController');
 const { createProductOffer, getAllProductOffer, getProductOfferById, updateProductOfferById, deleteProductOfferById } = require('../controller/productOfferController');
 const { createOffer, getAllOffers, getOffersById, updateOfferById, deleteOfferById } = require('../controller/offerController');
+const { createReason, getAllReason, getReasonById, updateReasonById, deleteReasonById } = require('../controller/reasonOfCancellationController');
+const { createCancelOrder, getAllCancelledOrders, getCancelledOrderById } = require('../controller/cancelOrderController');
+const { getDashboardSummary, getOrderSummary, getTopProducts, getSalesByLocation, getAllReviews } = require('../controller/dashboardController');
 const indexRoutes = express.Router();
 
 // Auth Routes
@@ -39,8 +42,16 @@ indexRoutes.post('/forgotPassword', forgotPassword)
 indexRoutes.post('/resetPassword/:id', changePassword)
 indexRoutes.put('/updatePassword', auth(['admin', 'user']), updatePassword)
 
-// User Routes Routes
+// Dashboard Routes 
 
+indexRoutes.get('/dashboardSummury', getDashboardSummary)
+indexRoutes.get('/orderSummary', getOrderSummary) 
+indexRoutes.get('/topProducts', getTopProducts)
+indexRoutes.get('/salesByLocation', getSalesByLocation)
+indexRoutes.get('/allReviews', getAllReviews)
+
+// User Routes Routes
+ 
 indexRoutes.post('/createadmin', createNewUserAdmin);
 indexRoutes.post('/createUser', createNewUser);
 indexRoutes.get('/getAllUsers', auth(['admin']), getAllUsers);
@@ -261,4 +272,18 @@ indexRoutes.get('/getOffer/:id', auth(['admin', 'user']), getOffersById)
 indexRoutes.put('/updateOffer/:id', auth(['admin']), upload.single('offerImage'), updateOfferById)
 indexRoutes.delete('/deleteOffer/:id', auth(['admin']), deleteOfferById)
 
-module.exports = indexRoutes 
+// Reason Of Cancellation Routes
+
+indexRoutes.post('/createReason', auth(['admin']), createReason);
+indexRoutes.get('/allReasons', auth(['admin', 'user']), getAllReason)
+indexRoutes.get('/getReason/:id', auth(['admin', 'user']), getReasonById)
+indexRoutes.put('/updateReason/:id', auth(['admin']), updateReasonById)
+indexRoutes.delete('/deleteReason/:id', auth(['admin']), deleteReasonById);
+
+// Cancelle Order Routes
+
+indexRoutes.post('/cancelleOrder', auth(['admin']), createCancelOrder)
+indexRoutes.get('/allCancellOrders', auth(['admin']), getAllCancelledOrders)
+indexRoutes.get('/getCancelledOrder/:id', auth(['admin']), getCancelledOrderById)
+
+module.exports = indexRoutes
