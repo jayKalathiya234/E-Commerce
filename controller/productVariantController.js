@@ -1,8 +1,9 @@
 const productVariant = require('../model/productVariantModel')
 const mongoose = require('mongoose')
+
 exports.createProductVariant = async (req, res) => {
     try {
-        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy } = req.body
+        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy, manufacturingDetails } = req.body
 
         // let checkExistProductVariant = await productVariant.findOne({ productId })
 
@@ -42,7 +43,8 @@ exports.createProductVariant = async (req, res) => {
             colorName,
             images: files.map(file => file.path),
             shiping,
-            returnPolicy
+            returnPolicy,
+            manufacturingDetails
         })
 
         return res.status(200).json({ status: 200, message: "Product Variant Create SuccessFully...", productVariant: checkExistProductVariant });
@@ -108,7 +110,7 @@ exports.updateProductVariantById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let { title, description, currentPrice, originalPrice, discount, specifications, storage, size, colorName, images, stockStatus } = req.body
+        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy, manufacturingDetails ,stockStatus } = req.body
 
         let updateProductVariantId = await productVariant.findById(id)
 
@@ -116,14 +118,20 @@ exports.updateProductVariantById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Product Variant Not Found" })
         }
 
-        if (title !== undefined) updateProductVariantId.title = title
-        if (description !== undefined) updateProductVariantId.description = description
-        if (currentPrice !== undefined) updateProductVariantId.currentPrice = currentPrice
-        if (discount !== undefined) updateProductVariantId.discount = discount
-        if (originalPrice !== undefined) updateProductVariantId.originalPrice = originalPrice
-        if (colorName !== undefined) updateProductVariantId.colorName = colorName
-        if (storage !== undefined) updateProductVariantId.storage = storage
+        if (productId !== undefined) updateProductVariantId.productId = productId
+        if (sizeNameId !== undefined) updateProductVariantId.sizeNameId = sizeNameId
         if (size !== undefined) updateProductVariantId.size = size
+        if (unitId !== undefined) updateProductVariantId.unitId = unitId
+        if (shortDescription !== undefined) updateProductVariantId.shortDescription = shortDescription
+        if (originalPrice !== undefined) updateProductVariantId.originalPrice = originalPrice
+        if (discountPrice !== undefined) updateProductVariantId.discountPrice = discountPrice
+        if (productOfferId !== undefined) updateProductVariantId.productOfferId = productOfferId
+        if (colorName !== undefined) updateProductVariantId.colorName = colorName
+        if (description !== undefined) updateProductVariantId.description = description
+        if (storage !== undefined) updateProductVariantId.storage = storage
+        if (shiping !== undefined) updateProductVariantId.shiping = shiping
+        if (returnPolicy !== undefined) updateProductVariantId.returnPolicy = returnPolicy
+        if (manufacturingDetails !== undefined) updateProductVariantId.manufacturingDetails = manufacturingDetails
         if (stockStatus !== undefined) updateProductVariantId.stockStatus = stockStatus
 
         if (req.files && req.files['images']) {

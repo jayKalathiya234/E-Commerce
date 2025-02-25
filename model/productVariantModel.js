@@ -56,6 +56,10 @@ const productVariantSchema = mongoose.Schema({
         type: String,
         require: true
     },
+    manufacturingDetails: {
+        type: String,
+        require: true
+    },
     returnPolicy: {
         type: String,
         require: true
