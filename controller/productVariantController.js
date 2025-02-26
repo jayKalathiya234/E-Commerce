@@ -66,7 +66,16 @@ exports.getAllProductVariant = async (req, res) => {
 
         let paginatedProductVariant;
 
-        paginatedProductVariant = await productVariant.find();
+        paginatedProductVariant = await productVariant.aggregate([
+            {
+                $lookup: {
+                    from: 'stocks',
+                    localField: 'productId',
+                    foreignField: 'productId',
+                    as: 'stockData'
+                }
+            }
+        ])
 
         let count = paginatedProductVariant.length
 
@@ -92,7 +101,21 @@ exports.getProductVarinatById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getProductVariantId = await productVariant.findById(id)
+        let getProductVariantId = await productVariant.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'stocks',
+                    localField: 'productId',
+                    foreignField: 'productId',
+                    as: 'stockData'
+                }
+            }
+        ])
 
         if (!getProductVariantId) {
             return res.status(404).json({ status: 404, message: "Product Variant Not Found" })
@@ -110,7 +133,7 @@ exports.updateProductVariantById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy, manufacturingDetails ,stockStatus } = req.body
+        let { productId, sizeNameId, size, unitId, shortDescription, originalPrice, discountPrice, productOfferId, colorName, images, specifications, description, storage, shiping, returnPolicy, manufacturingDetails, stockStatus } = req.body
 
         let updateProductVariantId = await productVariant.findById(id)
 
