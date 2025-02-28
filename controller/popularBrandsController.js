@@ -6,9 +6,9 @@ exports.createPopularBrands = async (req, res) => {
 
         let checkExistBrandName = await popularBrands.findOne({ brandName })
 
-        if (checkExistBrandName) {
-            return res.status(409).json({ status: 409, message: "Brand Name Already Exist..." })
-        }
+        // if (checkExistBrandName) {
+        //     return res.status(409).json({ status: 409, message: "Brand Name Already Exist..." })
+        // }
 
         if (!req.files) {
             return res.status(404).json({ status: 404, message: "brandLogo & brandImage File Is Required" })
