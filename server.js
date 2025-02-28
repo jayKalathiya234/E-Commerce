@@ -8,13 +8,14 @@ const path = require('path')
 const cors = require('cors');
 
 server.use(express.json());
-server.use('/api', indexRoutes);
-server.use('/public', express.static(path.join(__dirname, 'public')))
 
 server.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }));
+
+server.use('/api', indexRoutes);
+server.use('/public', express.static(path.join(__dirname, 'public')))
 
 server.listen(port, () => {
     connectDB();
