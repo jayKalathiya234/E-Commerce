@@ -29,6 +29,10 @@ const specialOfferSchema = mongoose.Schema({
     endDate: {
         type: String,
         require: true
+    },
+    status: {
+        type: Boolean,
+        require: true
     }
 }, {
     timestamps: true,

@@ -43,6 +43,10 @@ const offerSchema = mongoose.Schema({
     description: {
         type: String,
         require: true
+    },
+    status: {
+        type: Boolean,
+        require: true
     }
 }, {
     timestamps: true,
