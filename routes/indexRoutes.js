@@ -45,18 +45,18 @@ indexRoutes.put('/updatePassword', auth(['admin', 'user']), updatePassword)
 // Dashboard Routes 
 
 indexRoutes.get('/dashboardSummury', getDashboardSummary)
-indexRoutes.get('/orderSummary', getOrderSummary) 
+indexRoutes.get('/orderSummary', getOrderSummary)
 indexRoutes.get('/topProducts', getTopProducts)
 indexRoutes.get('/salesByLocation', getSalesByLocation)
 indexRoutes.get('/allReviews', getAllReviews)
 
 // User Routes Routes
- 
+
 indexRoutes.post('/createadmin', createNewUserAdmin);
 indexRoutes.post('/createUser', createNewUser);
 indexRoutes.get('/getAllUsers', auth(['admin']), getAllUsers);
 indexRoutes.get('/getUser', auth(['admin', 'user']), getUserById);
-indexRoutes.put('/updateUser', auth(['admin', 'user']), updateUserById);
+indexRoutes.put('/updateUser', auth(['admin', 'user']), upload.single('image'), updateUserById);
 indexRoutes.get('/deactiveUser', auth(['user']), deactiveUserAccount);
 indexRoutes.get('/deactiveAccountOtpVerify', auth(['user']), deactiveAccoutOtpVerify);
 indexRoutes.get('/activeUserAccount', auth(['user']), activeUserAccount);

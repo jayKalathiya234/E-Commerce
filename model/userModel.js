@@ -33,6 +33,10 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    image: {
+        type: String,
+        require: true
+    },
     role: {
         type: String,
         enum: ['admin', 'user'],
