@@ -1,4 +1,5 @@
 const offers = require('../model/offerModel')
+const mongoose = require('mongoose')
 
 exports.createOffer = async (req, res) => {
     try {
@@ -47,7 +48,32 @@ exports.getAllOffers = async (req, res) => {
 
         let paginatedOffers;
 
-        paginatedOffers = await offers.find()
+        paginatedOffers = await offers.aggregate([
+            {
+                $lookup: {
+                    from: "maincategories",
+                    localField: "mainCategoryId",
+                    foreignField: "_id",
+                    as: "mainCategoriesData"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryId',
+                    foreignField: "_id",
+                    as: 'categoriesData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subcategories',
+                    localField: 'subCategoryId',
+                    foreignField: "_id",
+                    as: 'subCategoriesData'
+                }
+            },
+        ]);
 
         let count = paginatedOffers.length
 
@@ -73,7 +99,37 @@ exports.getOffersById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getOfferId = await offers.findById(id)
+        let getOfferId = await offers.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "maincategories",
+                    localField: "mainCategoryId",
+                    foreignField: "_id",
+                    as: "mainCategoriesData"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryId',
+                    foreignField: "_id",
+                    as: 'categoriesData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subcategories',
+                    localField: 'subCategoryId',
+                    foreignField: "_id",
+                    as: 'subCategoriesData'
+                }
+            },
+        ])
 
         if (!getOfferId) {
             return res.status(404).json({ status: 404, message: "Offer Not Found" })
