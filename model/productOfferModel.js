@@ -56,6 +56,10 @@ const productOfferSchema = mongoose.Schema({
     description: {
         type: String,
         require: true
+    },
+    status: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,
