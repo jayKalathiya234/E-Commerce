@@ -26,7 +26,7 @@ const returnOrderSchema = mongoose.Schema({
     },
     returnOrderStatus: {
         type: String,
-        enum: ['Pending','Accepted','Cancelled'],
+        enum: ['Pending', 'Accepted', 'Cancelled'],
         default: 'Pending'
     }
 }, {
