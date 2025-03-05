@@ -78,6 +78,14 @@ exports.getAllProductOffer = async (req, res) => {
                     foreignField: "_id",
                     as: 'productData'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'productvariants',
+                    localField: 'productData._id',
+                    foreignField: 'productId',
+                    as: "productVariantData"
+                }
             }
         ])
 
@@ -141,6 +149,14 @@ exports.getProductOfferById = async (req, res) => {
                     localField: 'productId',
                     foreignField: "_id",
                     as: 'productData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productvariants',
+                    localField: 'productData._id',
+                    foreignField: 'productId',
+                    as: "productVariantData"
                 }
             }
         ])
