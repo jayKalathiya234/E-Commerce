@@ -58,7 +58,31 @@ exports.getAllCancelledOrders = async (req, res) => {
                     foreignField: "_id",
                     as: "reasonForCancellationData"
                 }
-            }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "orderData.userId",
+                    foreignField: "_id",
+                    as: "userData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderData.items.productId",
+                    foreignField: "_id",
+                    as: "productData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "productvariants",
+                    localField: "orderData.items.productVariantId",
+                    foreignField: "_id",
+                    as: "productVariantData"
+                }
+            },
         ])
 
         let count = paginatedCancelledOrders.length
@@ -106,7 +130,31 @@ exports.getCancelledOrderById = async (req, res) => {
                     foreignField: "_id",
                     as: "reasonForCancellationData"
                 }
-            }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "orderData.userId",
+                    foreignField: "_id",
+                    as: "userData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderData.items.productId",
+                    foreignField: "_id",
+                    as: "productData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "productvariants",
+                    localField: "orderData.items.productVariantId",
+                    foreignField: "_id",
+                    as: "productVariantData"
+                }
+            },
         ])
 
         return res.status(200).json({ status: 200, message: "All Cancelled Order Found SuccessFully...", cancelleOrder: getCancelledOrderId })
