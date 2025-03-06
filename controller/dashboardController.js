@@ -120,7 +120,18 @@ exports.getDashboardSummary = async (req, res) => {
 
 exports.getOrderSummary = async (req, res) => {
     try {
+        const { timeframe, year, month } = req.query;
+        const { startDate, endDate } = getDateRange(timeframe, year, month);
+
         const summary = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }
+            },
             {
                 $group: {
                     _id: "$orderStatus",
