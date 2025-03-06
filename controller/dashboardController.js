@@ -51,7 +51,6 @@ exports.getDashboardSummary = async (req, res) => {
         prevStartDate.setTime(prevStartDate.getTime() - diffTime);
         prevEndDate.setTime(prevEndDate.getTime() - diffTime);
 
-        // Get current year and previous year
         const currentYear = new Date().getFullYear();
         const previousYear = currentYear - 1;
 
