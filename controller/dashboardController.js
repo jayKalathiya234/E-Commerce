@@ -108,7 +108,7 @@ exports.getDashboardSummary = async (req, res) => {
             totalIncome: current.totalIncome,
             totalOrders: current.totalOrders,
             totalCustomers: current.totalCustomers
-        };        
+        };
 
         return res.status(200).json({ status: 200, message: "Dashboard Summury Data Found SuccessFully...", data: response });
 
@@ -120,18 +120,7 @@ exports.getDashboardSummary = async (req, res) => {
 
 exports.getOrderSummary = async (req, res) => {
     try {
-        const { timeframe, year, month } = req.query;
-        const { startDate, endDate } = getDateRange(timeframe, year, month);
-
         const summary = await Order.aggregate([
-            {
-                $match: {
-                    createdAt: {
-                        $gte: startDate,
-                        $lte: endDate
-                    }
-                }
-            },
             {
                 $group: {
                     _id: "$orderStatus",

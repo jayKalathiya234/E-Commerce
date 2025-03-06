@@ -44,11 +44,11 @@ indexRoutes.put('/updatePassword', auth(['admin', 'user']), updatePassword)
 
 // Dashboard Routes 
 
-indexRoutes.get('/dashboardSummury', getDashboardSummary)
-indexRoutes.get('/orderSummary', getOrderSummary)
-indexRoutes.get('/topProducts', getTopProducts)
-indexRoutes.get('/salesByLocation', getSalesByLocation)
-indexRoutes.get('/allReviews', getAllReviews)
+indexRoutes.get('/dashboardSummury', auth(['admin']), getDashboardSummary)
+indexRoutes.get('/orderSummary', auth(['admin']), getOrderSummary)
+indexRoutes.get('/topProducts', auth(['admin']), getTopProducts)
+indexRoutes.get('/salesByLocation', auth(['admin']), getSalesByLocation)
+indexRoutes.get('/allReviews', auth(['admin']), getAllReviews)
 
 // User Routes Routes
 
