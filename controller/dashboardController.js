@@ -51,6 +51,10 @@ exports.getDashboardSummary = async (req, res) => {
         prevStartDate.setTime(prevStartDate.getTime() - diffTime);
         prevEndDate.setTime(prevEndDate.getTime() - diffTime);
 
+        // Get current year and previous year
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
+
         const summaryData = await Order.aggregate([
             {
                 $facet: {
@@ -91,6 +95,80 @@ exports.getDashboardSummary = async (req, res) => {
                                 totalCustomers: { $size: "$uniqueCustomers" }
                             }
                         }
+                    ],
+                    currentYearMonthly: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: new Date(`${currentYear}-01-01`),
+                                    $lte: endDate
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$items"
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    month: { $month: "$createdAt" }
+                                },
+                                sales: { $sum: "$items.quantity" },
+                                income: { $sum: "$totalAmount" },
+                                orders: { $sum: 1 },
+                                customers: { $addToSet: "$userId" }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                month: "$_id.month",
+                                sales: 1,
+                                income: 1,
+                                orders: 1,
+                                customers: { $size: "$customers" }
+                            }
+                        },
+                        {
+                            $sort: { month: 1 }
+                        }
+                    ],
+                    previousYearMonthly: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: new Date(`${previousYear}-01-01`),
+                                    $lte: new Date(`${previousYear}-12-31`)
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$items"
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    month: { $month: "$createdAt" }
+                                },
+                                sales: { $sum: "$items.quantity" },
+                                income: { $sum: "$totalAmount" },
+                                orders: { $sum: 1 },
+                                customers: { $addToSet: "$userId" }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                month: "$_id.month",
+                                sales: 1,
+                                income: 1,
+                                orders: 1,
+                                customers: { $size: "$customers" }
+                            }
+                        },
+                        {
+                            $sort: { month: 1 }
+                        }
                     ]
                 }
             }
@@ -103,14 +181,59 @@ exports.getDashboardSummary = async (req, res) => {
             totalCustomers: 0
         };
 
+        const currentYearData = summaryData[0].currentYearMonthly || [];
+        const previousYearData = summaryData[0].previousYearMonthly || [];
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const formattedCurrentYearData = [];
+        const formattedPreviousYearData = [];
+
+        const currentMonth = new Date().getMonth();
+
+        for (let i = 0; i < 12; i++) {
+            if (i <= currentMonth) {
+                const monthData = currentYearData.find(item => item.month === i + 1);
+
+                formattedCurrentYearData.push({
+                    monthName: monthNames[i],
+                    monthNumber: i + 1,
+                    sales: monthData ? monthData.sales : 0,
+                    income: monthData ? monthData.income : 0,
+                    orders: monthData ? monthData.orders : 0,
+                    customers: monthData ? monthData.customers : 0
+                });
+            }
+        }
+
+        for (let i = 0; i < 12; i++) {
+            const monthData = previousYearData.find(item => item.month === i + 1);
+
+            formattedPreviousYearData.push({
+                monthName: monthNames[i],
+                monthNumber: i + 1,
+                sales: monthData ? monthData.sales : 0,
+                income: monthData ? monthData.income : 0,
+                orders: monthData ? monthData.orders : 0,
+                customers: monthData ? monthData.customers : 0
+            });
+        }
+
         const response = {
             totalSales: current.totalSales,
             totalIncome: current.totalIncome,
             totalOrders: current.totalOrders,
-            totalCustomers: current.totalCustomers
+            totalCustomers: current.totalCustomers,
+            currentYear: {
+                year: currentYear,
+                monthlyData: formattedCurrentYearData
+            },
+            previousYear: {
+                year: previousYear,
+                monthlyData: formattedPreviousYearData
+            }
         };
 
-        return res.status(200).json({ status: 200, message: "Dashboard Summury Data Found SuccessFully...", data: response });
+        return res.status(200).json({ status: 200, message: "Dashboard Summary Data Found Successfully...", data: response });
 
     } catch (error) {
         console.log(error);
@@ -290,44 +413,253 @@ exports.getSalesByLocation = async (req, res) => {
 
         const { startDate, endDate } = getDateRange(timeframe, year, month);
 
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
+
         const salesData = await Order.aggregate([
             {
-                $match: {
-                    createdAt: {
-                        $gte: startDate,
-                        $lte: endDate
-                    }
+                $facet: {
+                    currentPeriod: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: startDate,
+                                    $lte: endDate
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$addressId",
+                                totalSales: {
+                                    $sum: "$totalAmount"
+                                },
+                                orderCount: { $sum: 1 },
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "addresses",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "address"
+                            }
+                        },
+                        { $unwind: "$address" },
+                        {
+                            $project: {
+                                _id: 0,
+                                totalSales: 1,
+                                orderCount: 1,
+                                city: "$address.city",
+                                state: "$address.state",
+                                country: "$address.country"
+                            }
+                        },
+                        { $sort: { totalSales: -1 } }
+                    ],
+
+                    currentYearMonthly: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: new Date(`${currentYear}-01-01`),
+                                    $lte: new Date()
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    addressId: "$addressId",
+                                    month: { $month: "$createdAt" }
+                                },
+                                totalSales: { $sum: "$totalAmount" },
+                                orderCount: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "addresses",
+                                localField: "_id.addressId",
+                                foreignField: "_id",
+                                as: "address"
+                            }
+                        },
+                        { $unwind: "$address" },
+                        {
+                            $project: {
+                                _id: 0,
+                                month: "$_id.month",
+                                city: "$address.city",
+                                state: "$address.state",
+                                country: "$address.country",
+                                totalSales: 1,
+                                orderCount: 1
+                            }
+                        },
+                        { $sort: { city: 1, month: 1 } }
+                    ],
+
+                    previousYearMonthly: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: new Date(`${previousYear}-01-01`),
+                                    $lte: new Date(`${previousYear}-12-31`)
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    addressId: "$addressId",
+                                    month: { $month: "$createdAt" }
+                                },
+                                totalSales: { $sum: "$totalAmount" },
+                                orderCount: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "addresses",
+                                localField: "_id.addressId",
+                                foreignField: "_id",
+                                as: "address"
+                            }
+                        },
+                        { $unwind: "$address" },
+                        {
+                            $project: {
+                                _id: 0,
+                                month: "$_id.month",
+                                city: "$address.city",
+                                state: "$address.state",
+                                country: "$address.country",
+                                totalSales: 1,
+                                orderCount: 1
+                            }
+                        },
+                        { $sort: { city: 1, month: 1 } }
+                    ],
+
+                    yearlyAverages: [
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: new Date(`${previousYear}-01-01`),
+                                    $lte: new Date(`${previousYear}-12-31`)
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    addressId: "$addressId",
+                                    month: { $month: "$createdAt" }
+                                },
+                                monthlySales: { $sum: "$totalAmount" },
+                                monthlyOrders: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$_id.addressId",
+                                avgMonthlySales: { $avg: "$monthlySales" },
+                                avgMonthlyOrders: { $avg: "$monthlyOrders" },
+                                monthsWithData: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "addresses",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "address"
+                            }
+                        },
+                        { $unwind: "$address" },
+                        {
+                            $project: {
+                                _id: 0,
+                                city: "$address.city",
+                                state: "$address.state",
+                                country: "$address.country",
+                                avgMonthlySales: 1,
+                                avgMonthlyOrders: 1,
+                                monthsWithData: 1
+                            }
+                        },
+                        { $sort: { avgMonthlySales: -1 } }
+                    ]
                 }
-            },
-            {
-                $group: {
-                    _id: "$addressId",
-                    totalSales: {
-                        $sum: "$totalAmount"
-                    },
-                    orderCount: { $sum: 1 },
-                }
-            },
-            {
-                $lookup: {
-                    from: "addresses",
-                    localField: "_id",
-                    foreignField: "_id",
-                    as: "address"
-                }
-            },
-            { $unwind: "$address" },
-            {
-                $project: {
-                    _id: 0,
-                    totalSales: 1,
-                    city: "$address.city",
-                }
-            },
-            { $sort: { totalSales: -1 } }
+            }
         ]);
 
-        return res.status(200).json({ status: 200, message: "Sales by Address Found Successfully...", data: salesData });
+        const currentPeriodData = salesData[0].currentPeriod || [];
+        const currentYearMonthlyData = salesData[0].currentYearMonthly || [];
+        const previousYearMonthlyData = salesData[0].previousYearMonthly || [];
+        const yearlyAverages = salesData[0].yearlyAverages || [];
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const currentMonth = new Date().getMonth();
+
+        const allCities = new Set();
+        [...currentPeriodData, ...currentYearMonthlyData, ...previousYearMonthlyData, ...yearlyAverages].forEach(item => {
+            if (item.city) {
+                allCities.add(item.city);
+            }
+        });
+
+        const formattedCurrentYearData = {};
+        Array.from(allCities).forEach(city => {
+            formattedCurrentYearData[city] = Array(currentMonth + 1).fill().map((_, i) => {
+                const monthData = currentYearMonthlyData.find(item => item.city === city && item.month === i + 1);
+                return {
+                    monthName: monthNames[i],
+                    monthNumber: i + 1,
+                    totalSales: monthData ? monthData.totalSales : 0,
+                    orderCount: monthData ? monthData.orderCount : 0
+                };
+            });
+        });
+
+        const formattedPreviousYearData = {};
+        Array.from(allCities).forEach(city => {
+            formattedPreviousYearData[city] = Array(12).fill().map((_, i) => {
+                const monthData = previousYearMonthlyData.find(item => item.city === city && item.month === i + 1);
+                return {
+                    monthName: monthNames[i],
+                    monthNumber: i + 1,
+                    totalSales: monthData ? monthData.totalSales : 0,
+                    orderCount: monthData ? monthData.orderCount : 0
+                };
+            });
+        });
+
+        const formattedYearlyAverages = {};
+        yearlyAverages.forEach(item => {
+            formattedYearlyAverages[item.city] = {
+                avgMonthlySales: item.avgMonthlySales,
+                avgMonthlyOrders: item.avgMonthlyOrders,
+                monthsWithData: item.monthsWithData
+            };
+        });
+
+        const response = {
+            currentPeriod: currentPeriodData,
+            yearlyAverages: formattedYearlyAverages,
+            currentYear: {
+                year: currentYear,
+                monthlyDataByCity: formattedCurrentYearData
+            },
+            previousYear: {
+                year: previousYear,
+                monthlyDataByCity: formattedPreviousYearData
+            }
+        };
+
+        return res.status(200).json({ status: 200, message: "Sales by Location Data Found Successfully...", data: response });
 
     } catch (error) {
         console.log(error);
