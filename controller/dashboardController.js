@@ -385,6 +385,7 @@ exports.getTopProducts = async (req, res) => {
                     price: { $first: "$variant.discountPrice" },
                     categoryName: { $first: { $arrayElemAt: ["$categoryData.categoryName", 0] } },
                     subCategoryName: { $first: { $arrayElemAt: ["$subCategoriesData.subCategoryName", 0] } },
+                    images: { $first: "$variant.images" },
                     totalOrders: { $sum: 1 },
                     avgRating: {
                         $avg: {
@@ -402,6 +403,7 @@ exports.getTopProducts = async (req, res) => {
                     price: 1,
                     categoryName: 1,
                     subCategoryName: 1,
+                    images: 1,
                     rating: { $round: ["$avgRating", 1] }
                 }
             }
