@@ -309,6 +309,15 @@ exports.getOrderSummary = async (req, res) => {
             }
         });
 
+        const totalPercentage = Object.values(formattedSummary).reduce((sum, value) => sum + value, 0);
+
+        if (totalPercentage > 0 && totalPercentage !== 100) {
+            const factor = 100 / totalPercentage;
+            for (const key in formattedSummary) {
+                formattedSummary[key] = Math.round(formattedSummary[key] * factor);
+            }
+        }
+
         return res.json({ status: 200, message: "Order Summary Found SuccessFully...", data: formattedSummary });
 
     } catch (error) {
