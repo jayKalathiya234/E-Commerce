@@ -140,6 +140,14 @@ exports.getAllProducts = async (req, res) => {
                     foreignField: "_id",
                     as: "productOfferData"
                 }
+            },
+             {
+                $lookup: {
+                    from: "ratingandreviews",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "ratingData"
+                }
             }
         ])
 
