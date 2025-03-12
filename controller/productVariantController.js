@@ -159,7 +159,7 @@ exports.updateProductVariantById = async (req, res) => {
 
         if (req.files && req.files['images']) {
             const files = req.files['images'];
-            updateProductVariantId.images = files.map(file => file.path);
+            updateProductVariantId.images = [...updateProductVariantId.images, ...files.map(file => file.path)];
         }
 
         if (specifications && typeof specifications === 'object') {
