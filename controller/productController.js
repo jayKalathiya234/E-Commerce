@@ -1,4 +1,5 @@
 const product = require('../model/productModel');
+const mongoose = require('mongoose')
 
 exports.createProduct = async (req, res) => {
     try {
@@ -175,7 +176,77 @@ exports.getProductById = async (req, res) => {
     try {
         let id = req.params.id
 
-        let getProductId = await product.findById(id)
+        let getProductId = await product.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "maincategories",
+                    localField: "mainCategoryId",
+                    foreignField: "_id",
+                    as: "mainCategoriesData"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryId',
+                    foreignField: "_id",
+                    as: 'categoriesData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subcategories',
+                    localField: 'subCategoryId',
+                    foreignField: "_id",
+                    as: 'subCategoriesData'
+                }
+            },
+            {
+                $lookup: {
+                    from: "productvariants",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "productVariantData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "sizes",
+                    localField: "productVariantData.sizeNameId",
+                    foreignField: "_id",
+                    as: "sizeData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "units",
+                    localField: "productVariantData.unitId",
+                    foreignField: "_id",
+                    as: "unitData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "productoffers",
+                    localField: "productVariantData.productOfferId",
+                    foreignField: "_id",
+                    as: "productOfferData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "ratingandreviews",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "ratingData"
+                }
+            }
+        ])
 
         if (!getProductId) {
             return res.status(404).json({ status: 404, message: "Product Not Found" })
@@ -296,4 +367,4 @@ exports.deleteProductById = async (req, res) => {
         console.log(error)
         return res.status(500).json({ status: 500, message: error.message })
     }
-}
+} 
