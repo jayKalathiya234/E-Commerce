@@ -142,7 +142,7 @@ exports.getAllProducts = async (req, res) => {
                     as: "productOfferData"
                 }
             },
-             {
+            {
                 $lookup: {
                     from: "ratingandreviews",
                     localField: "_id",
@@ -360,6 +360,7 @@ exports.deleteProductById = async (req, res) => {
         }
 
         await product.findByIdAndDelete(id)
+        await productVariantModel.deleteMany({ productId: id });
 
         return res.status(200).json({ status: 200, message: "Product Delete SuccessFully..." });
 
