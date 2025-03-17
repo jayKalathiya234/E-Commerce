@@ -1,8 +1,10 @@
 const mainCategory = require('../model/maincategoryModel')
+const categories = require('../model/categoryModel')
+const subCategory = require('../model/subCategoryModel')
 
 exports.createMainCategory = async (req, res) => {
     try {
-        let { mainCategoryName } = req.body
+        let { mainCategoryName, mainCategoryImage } = req.body
 
         let checkExistCategoryName = await mainCategory.findOne({ mainCategoryName })
 
@@ -12,6 +14,7 @@ exports.createMainCategory = async (req, res) => {
 
         checkExistCategoryName = await mainCategory.create({
             mainCategoryName,
+            mainCategoryImage: req.file.path
         });
 
         return res.status(201).json({ status: 201, message: "Main Category Create SuccessFully...", maincategory: checkExistCategoryName });
@@ -83,6 +86,10 @@ exports.updateMainCategoryById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Main Category Not Found" })
         }
 
+        if (req.body.mainCategoryImage) {
+            req.body.mainCategoryImage = req.file.path
+        }
+
         updateMainCategoryId = await mainCategory.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
         return res.status(200).json({ status: 200, message: "Main Category Updated SuccessFully...", mainCategory: updateMainCategoryId })
@@ -106,6 +113,22 @@ exports.deleteMainCategoryById = async (req, res) => {
         await mainCategory.findByIdAndDelete(id)
 
         return res.status(200).json({ status: 200, message: "Main Category Delete SuccessFully..." });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.getCategoryAndSubCategory = async (req, res) => {
+    try {
+        let id = req.params.id
+
+        let getAllCategorys = await categories.find({ mainCategoryId: id })
+
+        let getAllSubCategorys = await subCategory.find({ mainCategoryId: id })
+
+        return res.status(200).json({ status: 200, category: getAllCategorys, subCategory: getAllSubCategorys });
 
     } catch (error) {
         console.log(error);
