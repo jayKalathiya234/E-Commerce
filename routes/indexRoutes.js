@@ -252,7 +252,7 @@ indexRoutes.delete('/deleteCard/:id', auth(['admin']), deleteCardTitleById)
 // Popular Brands 
 
 indexRoutes.post('/createPopularBrand', auth(['admin']), upload.fields([{ name: 'brandLogo' }, { name: "brandImage" }]), createPopularBrands);
-indexRoutes.get('/getAllBrands', auth(['admin', 'user']), getAllPopularBrands);
+indexRoutes.get('/getAllBrands', getAllPopularBrands);
 indexRoutes.get('/getBrand/:id', auth(['admin', 'user']), getBrandById);
 indexRoutes.put('/updateBrand/:id', auth(['admin']), upload.fields([{ name: 'brandLogo' }, { name: "brandImage" }]), updateBrandById);
 indexRoutes.delete('/deleteBrand/:id', auth(['admin']), deletePopularBrandById)
@@ -268,7 +268,7 @@ indexRoutes.delete('/deleteProductOffer/:id', auth(['admin']), deleteProductOffe
 // Offer Routes
 
 indexRoutes.post('/createOffer', auth(['admin']), upload.single('offerImage'), createOffer)
-indexRoutes.get('/getAllOffers', auth(['admin', 'user']), getAllOffers)
+indexRoutes.get('/getAllOffers', getAllOffers)
 indexRoutes.get('/getOffer/:id', auth(['admin', 'user']), getOffersById)
 indexRoutes.put('/updateOffer/:id', auth(['admin']), upload.single('offerImage'), updateOfferById)
 indexRoutes.delete('/deleteOffer/:id', auth(['admin']), deleteOfferById)
