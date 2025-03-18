@@ -103,7 +103,7 @@ exports.updateSubCategoryById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "SubCategory Not Found" })
         }
 
-        if (req.body.subCategoryImage) {
+        if (req.file) {
             req.body.subCategoryImage = req.file.path
         }
 

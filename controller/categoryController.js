@@ -94,10 +94,10 @@ exports.updateCategoryById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Category Not Found" })
         }
 
-        if (req.body.categoryImage) {
+        if (req.file) {
             req.body.categoryImage = req.file.path
         }
-        
+
         updateCategoryId = await category.findByIdAndUpdate(id, { ...req.body }, { new: true })
 
         return res.status(200).json({ status: 200, message: "Category Updated SuccessFully...", category: updateCategoryId });

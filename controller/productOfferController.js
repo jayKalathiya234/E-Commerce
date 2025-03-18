@@ -184,10 +184,10 @@ exports.updateProductOfferById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Product Offer Not Found" })
         }
 
-        if (req.body.offerImage) {
+        if (req.file) {
             req.body.offerImage = req.file.path
         }
-        
+
         updateProductOfferId = await productOffer.findByIdAndUpdate(id, { ...req.body }, { new: true })
 
         return res.status(200).json({ status: 200, message: "Product Offer Found SuccessFully...", productOffer: updateProductOfferId })

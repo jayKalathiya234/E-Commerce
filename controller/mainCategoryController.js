@@ -86,7 +86,7 @@ exports.updateMainCategoryById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Main Category Not Found" })
         }
 
-        if (req.body.mainCategoryImage) {
+        if (req.file) {
             req.body.mainCategoryImage = req.file.path
         }
 
