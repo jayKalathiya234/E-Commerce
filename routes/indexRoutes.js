@@ -259,10 +259,10 @@ indexRoutes.delete('/deleteBrand/:id', auth(['admin']), deletePopularBrandById)
 
 // Product Offer Routes
 
-indexRoutes.post('/createProductOffer', auth(['admin']), createProductOffer)
+indexRoutes.post('/createProductOffer', auth(['admin']), upload.single('offerImage'), createProductOffer)
 indexRoutes.get('/allProductOffer', auth(['admin', 'user']), getAllProductOffer)
 indexRoutes.get('/getProductOffer/:id', auth(['admin', 'user']), getProductOfferById)
-indexRoutes.put('/updateProductOffer/:id', auth(['admin']), updateProductOfferById)
+indexRoutes.put('/updateProductOffer/:id', auth(['admin']), upload.single('offerImage'), updateProductOfferById)
 indexRoutes.delete('/deleteProductOffer/:id', auth(['admin']), deleteProductOfferById)
 
 // Offer Routes

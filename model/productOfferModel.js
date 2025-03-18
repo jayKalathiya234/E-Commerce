@@ -21,6 +21,10 @@ const productOfferSchema = mongoose.Schema({
         ref: 'products',
         require: true
     },
+    offerImage: {
+        type: String,
+        require: true
+    },
     offerName: {
         type: String,
         require: true
