@@ -122,16 +122,55 @@ exports.deleteMainCategoryById = async (req, res) => {
 
 exports.getCategoryAndSubCategory = async (req, res) => {
     try {
+        let mainCategories = await mainCategory.find();
+        let getAllCategories = await categories.find();
+        let getAllSubCategories = await subCategory.find();
+
+        let structuredData = mainCategories.map(mainCat => {
+            const mainCatId = mainCat._id ? mainCat._id.toString() : null;
+
+            if (!mainCatId) {
+                return { ...mainCat._doc, categories: [] };
+            }
+
+            return {
+                ...mainCat._doc,
+                categories: getAllCategories
+                    .filter(cat => {
+                        return cat.mainCategoryId && cat.mainCategoryId.toString() === mainCatId;
+                    })
+                    .map(category => {
+                        const categoryId = category._id ? category._id.toString() : null;
+
+                        return {
+                            ...category._doc,
+                            subCategories: getAllSubCategories.filter(subCat => {
+                                return subCat.categoryId && categoryId &&
+                                    subCat.categoryId.toString() === categoryId;
+                            })
+                        };
+                    })
+            };
+        });
+
+        return res.status(200).json({ status: 200, data: structuredData });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: error.message });
+    }
+}
+
+exports.getMainCategoryAndCategory = async (req, res) => {
+    try {
         let id = req.params.id
 
         let getAllCategorys = await categories.find({ mainCategoryId: id })
 
-        let getAllSubCategorys = await subCategory.find({ mainCategoryId: id })
-
-        return res.status(200).json({ status: 200, category: getAllCategorys, subCategory: getAllSubCategorys });
+        return res.status(200).json({ status: 200, category: getAllCategorys });
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500, message: error.message })
     }
-}
+};

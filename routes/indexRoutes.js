@@ -1,7 +1,7 @@
 const express = require('express');
 const { createNewUser, getAllUsers, createNewUserAdmin, getUserById, updateUserById, activeUserAccount, deactiveAccoutOtpVerify, activeAccoutOtpVerify, resendOtpDeactiveAccount, resendOtpActiveAccount, deactiveUserAccount, deleteUserById } = require('../controller/userController');
 const { verifyOtp, userLogin, forgotPassword, changePassword, adminLogin, updatePassword, getAllDeactiveUser } = require('../auth/userLogin');
-const { createMainCategory, getAllMainCategory, getMainCategoryById, updateMainCategoryById, deleteMainCategoryById, getCategoryAndSubCategory } = require('../controller/mainCategoryController');
+const { createMainCategory, getAllMainCategory, getMainCategoryById, updateMainCategoryById, deleteMainCategoryById, getCategoryAndSubCategory, getMainCategoryAndCategory } = require('../controller/mainCategoryController');
 const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategory, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
 const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById } = require('../controller/subCategoryController');
@@ -26,7 +26,7 @@ const { createHelpQuestion, getAllHelpQuestions, getHelpQuestionById, updateHelp
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require('../controller/aboutUsController');
 const { createCard, getAllCardTitles, getCardTitleById, updateCardTitleById, deleteCardTitleById } = require('../controller/cardController');
 const { createPopularBrands, getAllPopularBrands, getBrandById, updateBrandById, deletePopularBrandById } = require('../controller/popularBrandsController');
-const { createProductOffer, getAllProductOffer, getProductOfferById, updateProductOfferById, deleteProductOfferById } = require('../controller/productOfferController');
+const { createProductOffer, getAllProductOffer, getProductOfferById, updateProductOfferById, deleteProductOfferById, getProductByMainCategory, getProductOfferByMainCategoryId, getTrandingProductsByMainCategoryId } = require('../controller/productOfferController');
 const { createOffer, getAllOffers, getOffersById, updateOfferById, deleteOfferById } = require('../controller/offerController');
 const { createReason, getAllReason, getReasonById, updateReasonById, deleteReasonById } = require('../controller/reasonOfCancellationController');
 const { createCancelOrder, getAllCancelledOrders, getCancelledOrderById } = require('../controller/cancelOrderController');
@@ -74,6 +74,7 @@ indexRoutes.get('/getMainCategory/:id', auth(['admin', 'user']), getMainCategory
 indexRoutes.put('/updateMainCategory/:id', auth(['admin']), upload.single('mainCategoryImage'), updateMainCategoryById);
 indexRoutes.delete('/deleteMainCategory/:id', auth(['admin']), deleteMainCategoryById)
 indexRoutes.get('/getCategoryAndSubCategory/:id', getCategoryAndSubCategory)
+indexRoutes.get('/getMainCategoryAndCategory/:id', getMainCategoryAndCategory)
 
 // Category Routes
 
@@ -116,6 +117,9 @@ indexRoutes.get('/getProductVariant/:id', auth(['admin', 'user']), getProductVar
 indexRoutes.put('/updateProductVariant/:id', auth(['admin']), upload.fields([{ name: 'images' }]), updateProductVariantById);
 indexRoutes.delete('/deleteProductVariant/:id', auth(['admin']), deleteProducVariant);
 indexRoutes.put('/updateProductStatus/:id', auth(['admin']), updateProductStatusById);
+indexRoutes.get('/getProductByMainCategory/:id', getProductByMainCategory)
+indexRoutes.get('/getProductOfferByMainCategoryId/:id', getProductOfferByMainCategoryId)
+indexRoutes.get('/tredingProducts/:id', getTrandingProductsByMainCategoryId)
 
 // WishList 
 

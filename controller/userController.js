@@ -145,7 +145,7 @@ exports.deactiveUserAccount = async (req, res) => {
             return res.status(404).json({ status: 404, message: "User is Active" })
         }
 
-        deleteUserId.otp = 4567
+        deleteUserId.otp = 456789
 
         await deleteUserId.save();
 
@@ -195,7 +195,7 @@ exports.resendOtpDeactiveAccount = async (req, res) => {
             return res.status(404).json({ status: 404, message: "User is Active" })
         }
 
-        deleteUserId.otp = 7654
+        deleteUserId.otp = 765432
 
         await deleteUserId.save();
 
@@ -217,7 +217,7 @@ exports.activeUserAccount = async (req, res) => {
             return res.status(404).json({ status: 404, message: "User is Not active" })
         }
 
-        DeactiveUserId.otp = 5678
+        DeactiveUserId.otp = 567890
 
         await DeactiveUserId.save();
 
@@ -267,7 +267,7 @@ exports.resendOtpActiveAccount = async (req, res) => {
             return res.status(404).json({ status: 404, message: "User is Not active" })
         }
 
-        DeactiveUserId.otp = 8765
+        DeactiveUserId.otp = 876543
 
         await DeactiveUserId.save();
 
