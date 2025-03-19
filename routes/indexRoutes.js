@@ -57,12 +57,12 @@ indexRoutes.post('/createUser', createNewUser);
 indexRoutes.get('/getAllUsers', auth(['admin']), getAllUsers);
 indexRoutes.get('/getUser', auth(['admin', 'user']), getUserById);
 indexRoutes.put('/updateUser', auth(['admin', 'user']), upload.single('image'), updateUserById);
-indexRoutes.put('/deactiveUser', auth(['user']), deactiveUserAccount);
+indexRoutes.get('/deactiveUser', auth(['user']), deactiveUserAccount);
 indexRoutes.put('/deactiveAccountOtpVerify', auth(['user']), deactiveAccoutOtpVerify);
-indexRoutes.put('/activeUserAccount', auth(['user']), activeUserAccount);
+indexRoutes.get('/activeUserAccount', auth(['user']), activeUserAccount);
 indexRoutes.put('/activeAccountOtpVerify', auth(['user']), activeAccoutOtpVerify);
-indexRoutes.put('/resendOtpDeactiveAccount', auth(['user']), resendOtpDeactiveAccount);
-indexRoutes.put('/resendOtpActiveAccount', auth(['user']), resendOtpActiveAccount);
+indexRoutes.get('/resendOtpDeactiveAccount', auth(['user']), resendOtpDeactiveAccount);
+indexRoutes.get('/resendOtpActiveAccount', auth(['user']), resendOtpActiveAccount);
 indexRoutes.get('/allDeactiveUserAccount', auth(['admin']), getAllDeactiveUser)
 indexRoutes.delete('/deleteUser/:id', auth(['admin']), deleteUserById)
 
