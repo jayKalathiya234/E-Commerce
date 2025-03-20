@@ -2,16 +2,16 @@ const wishlist = require('../model/wishListModel')
 
 exports.createWishList = async (req, res) => {
     try {
-        let { userId, productId } = req.body
+        let { productId } = req.body
 
-        let checkExistWishList = await wishlist.findOne({ userId, productId })
+        let checkExistWishList = await wishlist.findOne({ userId: req.user._id, productId })
 
         if (checkExistWishList) {
             return res.status(409).json({ status: 409, message: "Product Alredy Exist..." })
         }
 
         checkExistWishList = await wishlist.create({
-            userId,
+            userId: req.user._id,
             productId
         });
 
