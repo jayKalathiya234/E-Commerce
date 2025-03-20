@@ -176,7 +176,7 @@ indexRoutes.get('/getMyReturnOrders', auth(['user']), getAllMyReturnOrderData);
 
 // contctUs Routes
 
-indexRoutes.post('/createContctUs', auth(['user']), createContactUs);
+indexRoutes.post('/createContctUs', createContactUs);
 indexRoutes.get('/allContactUs', auth(['admin']), getAllContactUs);
 indexRoutes.get('/getContactUs/:id', auth(['admin']), getContactUsById);
 indexRoutes.delete('/deleteContactUs/:id', auth(['admin']), deleteContactUsById);
