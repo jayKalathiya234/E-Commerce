@@ -4,7 +4,7 @@ const { verifyOtp, userLogin, forgotPassword, changePassword, adminLogin, update
 const { createMainCategory, getAllMainCategory, getMainCategoryById, updateMainCategoryById, deleteMainCategoryById, getCategoryAndSubCategory, getMainCategoryAndCategory } = require('../controller/mainCategoryController');
 const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategory, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
-const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById } = require('../controller/subCategoryController');
+const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById, getCategoryBySubCategory } = require('../controller/subCategoryController');
 const { createAddress, getAllAddress, getAddressById, updateAddressById, deleteAddressById, getAllMyAddress } = require('../controller/addressController');
 const { createProduct, getAllProducts, getProductById, updateProductById, deleteProductById } = require('../controller/productController');
 const { createProductVariant, getAllProductVariant, getProductVarinatById, updateProductVariantById, deleteProducVariant, updateProductStatusById } = require('../controller/productVariantController');
@@ -91,6 +91,7 @@ indexRoutes.get('/allSubCategory', getAllSubCategory);
 indexRoutes.get('/getSubCategory/:id', auth(['admin', 'user']), getSubCategoryById);
 indexRoutes.put('/updateSubCategory/:id', auth(['admin']), upload.single('subCategoryImage'), updateSubCategoryById);
 indexRoutes.delete('/deleteSubCategory/:id', auth(['admin']), deleteSubCategoryById);
+indexRoutes.get('/getCategoryBySubCategory/:id', auth(['admin', 'user']), getCategoryBySubCategory)
 
 // address Routes
 
