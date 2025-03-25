@@ -73,7 +73,7 @@ indexRoutes.get('/allMainCategory', getAllMainCategory);
 indexRoutes.get('/getMainCategory/:id', auth(['admin', 'user']), getMainCategoryById);
 indexRoutes.put('/updateMainCategory/:id', auth(['admin']), upload.single('mainCategoryImage'), updateMainCategoryById);
 indexRoutes.delete('/deleteMainCategory/:id', auth(['admin']), deleteMainCategoryById)
-indexRoutes.get('/getCategoryAndSubCategory/:id', getCategoryAndSubCategory)
+indexRoutes.get('/getCategoryAndSubCategory', getCategoryAndSubCategory)
 indexRoutes.get('/getMainCategoryAndCategory/:id', getMainCategoryAndCategory)
 
 // Category Routes
