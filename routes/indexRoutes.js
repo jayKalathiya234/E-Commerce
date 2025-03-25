@@ -6,7 +6,7 @@ const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategory, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
 const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById, getCategoryBySubCategory } = require('../controller/subCategoryController');
 const { createAddress, getAllAddress, getAddressById, updateAddressById, deleteAddressById, getAllMyAddress } = require('../controller/addressController');
-const { createProduct, getAllProducts, getProductById, updateProductById, deleteProductById } = require('../controller/productController');
+const { createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, globalSearch } = require('../controller/productController');
 const { createProductVariant, getAllProductVariant, getProductVarinatById, updateProductVariantById, deleteProducVariant, updateProductStatusById } = require('../controller/productVariantController');
 const { createWishList, getAllWishList, getWishListById, deleteWishlListById, getMyWishListById } = require('../controller/wishlistController');
 const { createSpecialOffer, getAllSpecialOffer, getSpecialOfferById, updateSpecialOfferById, deleteSpecialOfferById } = require('../controller/specialOfferController');
@@ -49,6 +49,7 @@ indexRoutes.get('/orderSummary', auth(['admin']), getOrderSummary)
 indexRoutes.get('/topProducts', auth(['admin']), getTopProducts)
 indexRoutes.get('/salesByLocation', auth(['admin']), getSalesByLocation)
 indexRoutes.get('/allReviews', auth(['admin']), getAllReviews)
+indexRoutes.get('/globalSearch', globalSearch)
 
 // User Routes Routes
 

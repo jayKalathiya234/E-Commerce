@@ -368,4 +368,63 @@ exports.deleteProductById = async (req, res) => {
         console.log(error)
         return res.status(500).json({ status: 500, message: error.message })
     }
-} 
+}
+
+exports.globalSearch = async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        const products = await product.aggregate([
+            {
+                $match: {
+                    productName: { $regex: query, $options: 'i' }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    productName: 1,
+                    stockStatus: 1,
+                    quantity: 1,
+                    mainCategoryId: 1,
+                    categoryId: 1,
+                    subCategoryId: 1
+                }
+            },
+            {
+                $lookup: {
+                    from: 'maincategories',
+                    localField: 'mainCategoryId',
+                    foreignField: '_id',
+                    as: 'mainCategory'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryId',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subcategories',
+                    localField: 'subCategoryId',
+                    foreignField: '_id',
+                    as: 'subCategory'
+                }
+            }
+        ]);
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found matching the search criteria.' });
+        }
+
+        return res.json(products);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+};
