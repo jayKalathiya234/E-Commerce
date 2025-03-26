@@ -414,3 +414,29 @@ exports.getTrandingProductsByMainCategoryId = async (req, res) => {
         return res.status(500).json({ status: 500, message: error.message });
     }
 }
+
+exports.newArivalProduct = async (req, res) => {
+    try {
+        let newArivalProduct = await product.aggregate([
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            },
+            {
+                $lookup: {
+                    from: "productvariants",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "productVariantData"
+                }
+            }
+        ])
+
+        return res.json(newArivalProduct)
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}

@@ -26,7 +26,7 @@ const { createHelpQuestion, getAllHelpQuestions, getHelpQuestionById, updateHelp
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require('../controller/aboutUsController');
 const { createCard, getAllCardTitles, getCardTitleById, updateCardTitleById, deleteCardTitleById } = require('../controller/cardController');
 const { createPopularBrands, getAllPopularBrands, getBrandById, updateBrandById, deletePopularBrandById } = require('../controller/popularBrandsController');
-const { createProductOffer, getAllProductOffer, getProductOfferById, updateProductOfferById, deleteProductOfferById, getProductByMainCategory, getProductOfferByMainCategoryId, getTrandingProductsByMainCategoryId } = require('../controller/productOfferController');
+const { createProductOffer, getAllProductOffer, getProductOfferById, updateProductOfferById, deleteProductOfferById, getProductByMainCategory, getProductOfferByMainCategoryId, getTrandingProductsByMainCategoryId, newArivalProduct } = require('../controller/productOfferController');
 const { createOffer, getAllOffers, getOffersById, updateOfferById, deleteOfferById } = require('../controller/offerController');
 const { createReason, getAllReason, getReasonById, updateReasonById, deleteReasonById } = require('../controller/reasonOfCancellationController');
 const { createCancelOrder, getAllCancelledOrders, getCancelledOrderById } = require('../controller/cancelOrderController');
@@ -122,8 +122,9 @@ indexRoutes.put('/updateProductStatus/:id', auth(['admin']), updateProductStatus
 indexRoutes.get('/getProductByMainCategory/:id', getProductByMainCategory)
 indexRoutes.get('/getProductOfferByMainCategoryId/:id', getProductOfferByMainCategoryId)
 indexRoutes.get('/tredingProducts/:id', getTrandingProductsByMainCategoryId)
+indexRoutes.get('/newArivalProduct',newArivalProduct)
 
-// WishList 
+// WishList  
 
 indexRoutes.post('/createWishList', auth(['admin', 'user']), createWishList);
 indexRoutes.get('/allwishList', auth(['admin']), getAllWishList);
