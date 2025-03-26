@@ -46,7 +46,7 @@ indexRoutes.put('/updatePassword', auth(['admin', 'user']), updatePassword)
 
 indexRoutes.get('/dashboardSummury', auth(['admin']), getDashboardSummary)
 indexRoutes.get('/orderSummary', auth(['admin']), getOrderSummary)
-indexRoutes.get('/topProducts', auth(['admin']), getTopProducts)
+indexRoutes.get('/topProducts', getTopProducts)
 indexRoutes.get('/salesByLocation', auth(['admin']), getSalesByLocation)
 indexRoutes.get('/allReviews', auth(['admin']), getAllReviews)
 indexRoutes.get('/globalSearch', globalSearch)

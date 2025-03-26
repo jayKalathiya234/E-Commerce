@@ -1,5 +1,6 @@
 const product = require('../model/productModel');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const productVariantModel = require('../model/productVariantModel');
 
 exports.createProduct = async (req, res) => {
     try {

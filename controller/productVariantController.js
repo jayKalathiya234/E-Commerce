@@ -11,16 +11,16 @@ exports.createProductVariant = async (req, res) => {
         //     return res.status(409).json({ status: 409, message: "Product Variant Alredy Exist..." })
         // }
 
-        if (typeof productOfferId === 'string') {
-            productOfferId = JSON.parse(productOfferId);
-        }
+        // if (typeof productOfferId === 'string') {
+        //     productOfferId = JSON.parse(productOfferId);
+        // }
 
-        if (Array.isArray(productOfferId)) {
-            productOfferId = productOfferId.map(id => new mongoose.Types.ObjectId(id));
-        }
-        else {
-            return res.status(400).json({ status: 400, message: "productOfferId must be an array of ObjectIds" });
-        }
+        // if (Array.isArray(productOfferId)) {
+        //     productOfferId = productOfferId.map(id => new mongoose.Types.ObjectId(id));
+        // }
+        // else {
+        //     return res.status(400).json({ status: 400, message: "productOfferId must be an array of ObjectIds" });
+        // }
 
         if (!req.files) {
             return res.status(404).json({ status: 404, message: "Image Is Required" });
@@ -157,6 +157,15 @@ exports.updateProductVariantById = async (req, res) => {
         if (manufacturingDetails !== undefined) updateProductVariantId.manufacturingDetails = manufacturingDetails
         if (stockStatus !== undefined) updateProductVariantId.stockStatus = stockStatus
 
+        if (req.body.existingImages) {
+            try {
+                const existingImages = JSON.parse(req.body.existingImages);
+                updateProductVariantId.images = existingImages;
+            } catch (error) {
+                console.error("Error parsing existingImages:", error);
+            }
+        }
+        
         if (req.files && req.files['images']) {
             const files = req.files['images'];
             updateProductVariantId.images = [...updateProductVariantId.images, ...files.map(file => file.path)];
