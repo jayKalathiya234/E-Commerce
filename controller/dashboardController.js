@@ -381,6 +381,7 @@ exports.getTopProducts = async (req, res) => {
             {
                 $group: {
                     _id: "$items.productVariantId",
+                    productId: { $first: "$product._id" },
                     productName: { $first: "$product.productName" },
                     price: { $first: "$variant.discountPrice" },
                     categoryName: { $first: { $arrayElemAt: ["$categoryData.categoryName", 0] } },
@@ -399,6 +400,7 @@ exports.getTopProducts = async (req, res) => {
             {
                 $project: {
                     _id: 0,
+                    productId: 1,
                     productName: 1,
                     price: 1,
                     categoryName: 1,

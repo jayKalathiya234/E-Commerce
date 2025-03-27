@@ -122,7 +122,7 @@ indexRoutes.put('/updateProductStatus/:id', auth(['admin']), updateProductStatus
 indexRoutes.get('/getProductByMainCategory/:id', getProductByMainCategory)
 indexRoutes.get('/getProductOfferByMainCategoryId/:id', getProductOfferByMainCategoryId)
 indexRoutes.get('/tredingProducts/:id', getTrandingProductsByMainCategoryId)
-indexRoutes.get('/newArivalProduct',newArivalProduct)
+indexRoutes.get('/newArivalProduct', newArivalProduct)
 
 // WishList  
 
