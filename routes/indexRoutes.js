@@ -31,6 +31,7 @@ const { createOffer, getAllOffers, getOffersById, updateOfferById, deleteOfferBy
 const { createReason, getAllReason, getReasonById, updateReasonById, deleteReasonById } = require('../controller/reasonOfCancellationController');
 const { createCancelOrder, getAllCancelledOrders, getCancelledOrderById } = require('../controller/cancelOrderController');
 const { getDashboardSummary, getOrderSummary, getTopProducts, getSalesByLocation, getAllReviews } = require('../controller/dashboardController');
+const { createCart, getAllCarts, getCartById, updateCartById, deleteCartById, getAllMyCarts } = require('../controller/cartController');
 const indexRoutes = express.Router();
 
 // Auth Routes
@@ -293,5 +294,14 @@ indexRoutes.delete('/deleteReason/:id', auth(['admin']), deleteReasonById);
 indexRoutes.post('/cancelleOrder', auth(['admin']), createCancelOrder)
 indexRoutes.get('/allCancellOrders', auth(['admin']), getAllCancelledOrders)
 indexRoutes.get('/getCancelledOrder/:id', auth(['admin']), getCancelledOrderById)
+
+// Cart Routes
+
+indexRoutes.post('/createCart', auth(['user']), createCart)
+indexRoutes.get('/getAllCarts', auth(['admin']), getAllCarts)
+indexRoutes.get('/getCart/:id', auth(['user']), getCartById)
+indexRoutes.put('/updateCart/:id', auth(['user']), updateCartById)
+indexRoutes.delete('/deleteCart/:id', auth(['user']), deleteCartById)
+indexRoutes.get('/allMyCarts', auth(['admin', 'user']), getAllMyCarts)
 
 module.exports = indexRoutes

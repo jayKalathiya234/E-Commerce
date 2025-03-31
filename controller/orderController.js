@@ -5,11 +5,14 @@ const Product = require('../model/productModel')
 const ProductVariant = require('../model/productVariantModel');
 const productOffer = require('../model/productOfferModel')
 const stock = require('../model/stockModle');
+const cart = require('../model/cartModels');
 const mongoose = require('mongoose');
 
 exports.createOrder = async (req, res) => {
     try {
-        let { userId, addressId, items, coupenId, productOfferId } = req.body;
+        let { addressId, items, coupenId, productOfferId } = req.body;
+
+        items = await cart.find({ userId: req.user._id })
 
         let checkAddress = await Address.findById(addressId);
 
@@ -77,7 +80,7 @@ exports.createOrder = async (req, res) => {
         }
 
         const orderCreate = await order.create({
-            userId,
+            userId: req.user._id,
             addressId,
             items: products.map(({ product, variant, quantity }) => ({
                 productId: product._id,
@@ -102,6 +105,7 @@ exports.createOrder = async (req, res) => {
             await stockData.save();
         }
 
+        await cart.deleteMany({ userId: req.user._id });
 
         return res.status(201).json({ status: 201, message: "Order Created SuccessFully....", order: orderCreate });
 
