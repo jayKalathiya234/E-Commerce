@@ -448,7 +448,7 @@ exports.getAllMyOrders = async (req, res) => {
         let getAllMyOrders = await order.aggregate([
             {
                 $match: {
-                    userId: id
+                    userId: new mongoose.Types.ObjectId(id)
                 }
             },
             {
