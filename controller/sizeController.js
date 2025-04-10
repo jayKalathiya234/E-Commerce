@@ -5,11 +5,11 @@ exports.createSize = async (req, res) => {
     try {
         let { mainCategory, categoryId, subCategoryId, sizeName, size, unit } = req.body
 
-        let checkSizeNameIsExist = await sizes.findOne({ mainCategory, categoryId, subCategoryId, sizeName })
+        // let checkSizeNameIsExist = await sizes.findOne({ mainCategory, categoryId, subCategoryId, sizeName })
 
-        if (checkSizeNameIsExist) {
-            return res.status(409).json({ status: 409, message: "Size Name Alredy Exist.." })
-        }
+        // if (checkSizeNameIsExist) {
+        //     return res.status(409).json({ status: 409, message: "Size Name Alredy Exist.." })
+        // }
 
         checkSizeNameIsExist = await sizes.create({
             mainCategory,
