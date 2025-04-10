@@ -291,7 +291,7 @@ indexRoutes.delete('/deleteReason/:id', auth(['admin']), deleteReasonById);
 
 // Cancelle Order Routes
 
-indexRoutes.post('/cancelleOrder', auth(['admin']), createCancelOrder)
+indexRoutes.post('/cancelleOrder', auth(['user']), createCancelOrder)
 indexRoutes.get('/allCancellOrders', auth(['admin']), getAllCancelledOrders)
 indexRoutes.get('/getCancelledOrder/:id', auth(['admin']), getCancelledOrderById)
 
