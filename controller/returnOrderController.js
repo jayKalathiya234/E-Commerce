@@ -61,7 +61,7 @@ exports.returnOrderVerifyOtp = async (req, res) => {
         }
 
         checkOrder.isReturn = true
-
+        checkOrder.orderStatus = "Return"
         // returnOrderData.reasonForReturn = reasonForReturn;
         returnOrderData.otp = undefined;
         returnOrderData.mobileNo = mobileNo;

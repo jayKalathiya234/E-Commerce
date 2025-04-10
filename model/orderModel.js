@@ -50,7 +50,7 @@ const orderSchema = mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Confirmed', 'Shipped', 'outForDelivery', 'Delivered','Cancelled'],
+        enum: ['Confirmed', 'Shipped', 'outForDelivery', 'Delivered', 'Cancelled', 'Return'],
         default: 'Confirmed',
         require: true
     },
@@ -59,10 +59,10 @@ const orderSchema = mongoose.Schema({
         enum: ['received', 'notReceived'],
         require: true
     },
-    isReturn: {
-        type: Boolean,
-        default: false
-    }
+    // isReturn: {
+    //     type: Boolean,
+    //     default: false
+    // }
 }, {
     timestamps: true,
     versionKey: false
