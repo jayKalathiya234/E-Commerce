@@ -174,6 +174,14 @@ exports.getAllOrders = async (req, res) => {
                     foreignField: '_id',
                     as: 'productOfferData'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'returnorders',
+                    localField: '_id',
+                    foreignField: 'orderId',
+                    as: 'returnOrderData'
+                }
             }
         ])
 
@@ -253,6 +261,14 @@ exports.getOrderById = async (req, res) => {
                     localField: 'productOfferId',
                     foreignField: '_id',
                     as: 'productOfferData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'returnorders',
+                    localField: '_id',
+                    foreignField: 'orderId',
+                    as: 'returnOrderData'
                 }
             }
         ])
@@ -497,6 +513,14 @@ exports.getAllMyOrders = async (req, res) => {
                     localField: 'productOfferId',
                     foreignField: '_id',
                     as: 'productOfferData'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'returnorders',
+                    localField: '_id',
+                    foreignField: 'orderId',
+                    as: 'returnOrderData'
                 }
             }
         ])
