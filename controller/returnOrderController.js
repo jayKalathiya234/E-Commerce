@@ -60,7 +60,7 @@ exports.returnOrderVerifyOtp = async (req, res) => {
             return res.status(400).json({ status: 400, message: "Invalid OTP" });
         }
 
-        checkOrder.isReturn = true
+        // checkOrder.isReturn = true
         checkOrder.orderStatus = "Return"
         // returnOrderData.reasonForReturn = reasonForReturn;
         returnOrderData.otp = undefined;
