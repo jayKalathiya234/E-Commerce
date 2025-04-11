@@ -200,7 +200,15 @@ exports.getReturnOrderDataById = async (req, res) => {
                     foreignField: '_id',
                     as: 'cancellationData'
                 }
-            }
+            },
+            {
+                $lookup: {
+                    from: 'addresses',
+                    localField: 'orderData.addressId',
+                    foreignField: '_id',
+                    as: 'addressData'
+                },
+            },
         ])
 
         if (!getReturnOrderId) {
