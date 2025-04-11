@@ -26,7 +26,7 @@ const returnOrderSchema = mongoose.Schema({
     },
     returnOrderStatus: {
         type: String,
-        enum: ['Initiated', 'Picked up', 'Received','Refund Initiated','Refund Initiated'],
+        enum: ['Initiated', 'Picked up', 'Received','Refund Initiated','Refund Credited'],
         default: 'Initiated'
     }
 }, {
