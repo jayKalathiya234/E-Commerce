@@ -11,6 +11,11 @@ const cancelOrderSchema = mongoose.Schema({
         ref: 'reasonForCancellation',
         required: true
     },
+    cancelOrderStatus: {
+        type: String,
+        enum: ["Refund Initiated", 'Refund In Progresss', 'Refund Credited'],
+        default: 'Refund Initiated'
+    },
     comments: {
         type: String,
         required: true
