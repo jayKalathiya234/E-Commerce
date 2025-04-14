@@ -13,7 +13,7 @@ const cancelOrderSchema = mongoose.Schema({
     },
     cancelOrderStatus: {
         type: String,
-        enum: ["Refund Initiated", 'Refund In Progresss', 'Refund Credited'],
+        enum: ["Refund Initiated", 'Refund In Progress', 'Refund Credited'],
         default: 'Refund Initiated'
     },
     comments: {
