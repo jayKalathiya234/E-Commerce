@@ -292,8 +292,8 @@ indexRoutes.delete('/deleteReason/:id', auth(['admin']), deleteReasonById);
 // Cancelle Order Routes
 
 indexRoutes.post('/cancelleOrder', auth(['user']), createCancelOrder)
-indexRoutes.get('/allCancellOrders', auth(['admin']), getAllCancelledOrders)
-indexRoutes.get('/getCancelledOrder/:id', auth(['admin']), getCancelledOrderById)
+indexRoutes.get('/allCancellOrders', auth(['admin', 'user']), getAllCancelledOrders)
+indexRoutes.get('/getCancelledOrder/:id', auth(['admin', 'user']), getCancelledOrderById)
 
 // Cart Routes
 
