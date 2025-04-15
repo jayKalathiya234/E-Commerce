@@ -83,6 +83,14 @@ exports.getAllCancelledOrders = async (req, res) => {
                     as: "productVariantData"
                 }
             },
+            {
+                $lookup: {
+                    from: 'addresses',
+                    localField: 'orderData.addressId',
+                    foreignField: '_id',
+                    as: 'addressData'
+                }
+            }
         ])
 
         let count = paginatedCancelledOrders.length
@@ -155,6 +163,14 @@ exports.getCancelledOrderById = async (req, res) => {
                     as: "productVariantData"
                 }
             },
+            {
+                $lookup: {
+                    from: 'addresses',
+                    localField: 'orderData.addressId',
+                    foreignField: '_id',
+                    as: 'addressData'
+                }
+            }
         ])
 
         return res.status(200).json({ status: 200, message: "All Cancelled Order Found SuccessFully...", cancelleOrder: getCancelledOrderId })
