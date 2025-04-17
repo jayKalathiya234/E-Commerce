@@ -390,7 +390,12 @@ exports.getTopProducts = async (req, res) => {
                     totalOrders: { $sum: 1 },
                     avgRating: {
                         $avg: {
-                            $toDouble: { $ifNull: ["$reviews.rating", "0"] }
+                            $convert: {
+                                input: "$reviews.rating",
+                                to: "double",
+                                onError: 0,
+                                onNull: 0
+                            }
                         }
                     }
                 }
@@ -411,7 +416,7 @@ exports.getTopProducts = async (req, res) => {
             }
         ]);
 
-        return res.status(200).json({ status: 200, message: "Top Products Found SuccessFully...", data: topProducts });
+        return res.status(200).json({ status: 200, message: "Top Products Found Successfully...", data: topProducts });
 
     } catch (error) {
         console.log(error);
