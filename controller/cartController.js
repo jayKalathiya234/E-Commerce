@@ -149,7 +149,7 @@ exports.deleteCartById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Cart Not Found" })
         }
 
-        await cart.findByIdAndUpdate(id)
+        await cart.findByIdAndDelete(id)
 
         return res.status(200).json({ status: 200, message: "Cart Deleted SuccessFully...." })
 
