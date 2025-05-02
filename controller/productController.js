@@ -9,7 +9,7 @@ exports.createProduct = async (req, res) => {
         let checkExistProduct = await product.findOne({ mainCategoryId, categoryId, subCategoryId, productName })
 
         if (checkExistProduct) {
-            return res.status(409).json({ status: 409, message: "Product Alredy Exist" })
+            return res.status(409).json({ status: 409, message: "Product Alredy Exist",productId: checkExistProduct._id })
         }
 
         // const colorDetails = req.body.colorDetails
